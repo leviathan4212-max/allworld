@@ -241,7 +241,8 @@ body {
 .modal {
   border-radius: 8px; border: 1px solid var(--gold-dark);
   box-shadow: 0 0 0 1px var(--gold-light), var(--shadow-lg);
-  width: 100%; max-width: 560px; max-height: 86vh;
+  width: 100%; max-width: 560px;
+  max-height: 92vh;
   display: flex; flex-direction: column; overflow: hidden; position: relative;
 }
 .modal::before, .modal::after {
@@ -272,7 +273,7 @@ body {
   border-color: var(--gold); color: var(--gold-deep);
   background: rgba(224,192,136,0.12);
 }
-.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; min-height: 0; }
 .scroll::-webkit-scrollbar { width: 6px; }
 .scroll::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--gold-light), var(--gold));
@@ -317,7 +318,9 @@ body {
   border: 2px solid #dcc7cb;
   font-family: 'Georgia','Noto Serif SC',serif;
   text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  cursor: pointer; position: relative; overflow: hidden;
 }
+.char-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .char-name {
   font-weight: 600; font-size: 13px;
   display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
@@ -344,7 +347,19 @@ body {
   box-shadow: var(--shadow-sm);
   font-family: 'Georgia','Noto Serif SC',serif;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  cursor: pointer; position: relative; overflow: hidden;
 }
+.detail-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.detail-avatar::after {
+  content: '点击更换';
+  position: absolute; inset: auto 0 0 0;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 10px; line-height: 18px; text-align: center;
+  font-family: 'Noto Sans SC',sans-serif;
+  opacity: 0; transition: opacity 0.15s;
+  pointer-events: none;
+}
+.detail-avatar:hover::after { opacity: 1; }
 .detail-name {
   font-size: 16px; font-weight: 700; margin-top: 10px;
   text-align: center;
@@ -865,6 +880,48 @@ body {
   }
 
   // ============================================================
+  // 头像管理（localStorage）
+  // ============================================================
+  const AVATAR_PREFIX = 'tower_avatar_';
+  function getAvatar(name) {
+    try { return localStorage.getItem(AVATAR_PREFIX + name) || ''; } catch(e) { return ''; }
+  }
+  function setAvatar(name, dataUrl) {
+    try {
+      if (dataUrl) localStorage.setItem(AVATAR_PREFIX + name, dataUrl);
+      else localStorage.removeItem(AVATAR_PREFIX + name);
+    } catch(e) { alert('头像保存失败：存储空间可能已满'); }
+  }
+  function pickAvatar(name, onDone) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const SIZE = 200;
+          const canvas = document.createElement('canvas');
+          canvas.width = SIZE; canvas.height = SIZE;
+          const ctx = canvas.getContext('2d');
+          const scale = Math.max(SIZE / img.width, SIZE / img.height);
+          const w = img.width * scale, h = img.height * scale;
+          ctx.drawImage(img, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          setAvatar(name, dataUrl);
+          onDone(dataUrl);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }
+
+  // ============================================================
   // 世界条
   // ============================================================
   function renderWorldbar() {
@@ -882,7 +939,7 @@ body {
       if (/雪/.test(w)) return '❄';
       if (/雾/.test(w)) return '☁';
       if (/雷/.test(w)) return '⚡';
-      if (/风/.test(w)) return '≈';
+      if (/风/.test(w)) return '🌬';
       if (/阴/.test(w)) return '☁';
       return '◈';
     })();
@@ -1084,8 +1141,12 @@ body {
           const name = n.姓名 || key;
           const state = n.状态 || '未收服';
           const unrec = state === '未收服' ? 'unrecruited' : '';
+          const avatar = getAvatar(name);
+          const avatarInner = avatar
+            ? `<img src="${esc(avatar)}" alt="">`
+            : esc(name.slice(0,1));
           return `<div class="char-card ${unrec}" data-char-key="${esc(key)}">
-            <div class="char-avatar b-${esc(rank)}">${esc(name.slice(0,1))}</div>
+            <div class="char-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
             <div style="flex:1;min-width:0;">
               <div class="char-name">
                 ${esc(name)}
@@ -1103,6 +1164,13 @@ body {
           openCharDetail(el.dataset.charKey);
         });
       });
+      body.querySelectorAll('[data-avatar-name]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const nm = el.dataset.avatarName;
+          pickAvatar(nm, () => openCharList());
+        });
+      });
     }
     document.getElementById('mask-char-list').classList.add('show');
   }
@@ -1118,12 +1186,16 @@ body {
     const rank = n.品级 || '凡人';
     const fav = toNum(n.好感度, 0);
     const cor = toNum(n.堕落值, 0);
+    const avatar = getAvatar(name);
+    const avatarInner = avatar
+      ? `<img src="${esc(avatar)}" alt="">`
+      : esc(name.slice(0,1));
 
     const body = document.getElementById('char-detail-body');
     body.innerHTML = `
       <div class="char-detail">
         <div class="detail-left">
-          <div class="detail-avatar b-${esc(rank)}">${esc(name.slice(0,1))}</div>
+          <div class="detail-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
           <div class="detail-name">${esc(name)}</div>
           <div class="detail-rank rank-${esc(rank)}">${esc(rank)}</div>
           <div class="detail-meta">
@@ -1153,6 +1225,17 @@ body {
         </div>
       </div>
     `;
+
+    const avatarEl = body.querySelector('[data-avatar-name]');
+    if (avatarEl) {
+      avatarEl.addEventListener('click', () => {
+        const nm = avatarEl.dataset.avatarName;
+        pickAvatar(nm, dataUrl => {
+          avatarEl.innerHTML = `<img src="${esc(dataUrl)}" alt="">`;
+        });
+      });
+    }
+
     body.querySelectorAll('[data-char-tab]').forEach(el => {
       el.addEventListener('click', () => {
         body.querySelectorAll('[data-char-tab]').forEach(t => t.classList.remove('active'));
@@ -1528,11 +1611,16 @@ body {
   function init() {
     bindEvents();
     updateUI();
+    let subscribed = false;
     try {
       if (typeof eventOn === 'function' && window.Mvu && Mvu.events) {
         eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, updateUI);
+        subscribed = true;
       }
     } catch(e) {}
+    if (!subscribed) {
+      setInterval(updateUI, 2000);
+    }
   }
 
   if (document.readyState === 'loading') {
