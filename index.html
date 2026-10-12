@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --marble-base:   #f5f1e8;
+  --marble-1:      #faf7f1;
+  --marble-2:      #f0ebe0;
+  --marble-deep:   #2a251e;
+  --ink:     #2a251e;
+  --ink-2:   #4a4237;
+  --muted:   #857a6a;
+  --muted-2: #a59a8a;
+  --gold:        #b8935a;
+  --gold-light:  #e0c088;
+  --gold-bright: #f0d68a;
+  --gold-dark:   #8a6d3e;
+  --gold-deep:   #6b5230;
+  --line:   #d8cfbe;
+  --line-2: #c8bca6;
+  --shadow-sm: 0 2px 6px rgba(80,65,40,0.08);
+  --shadow:    0 8px 24px rgba(80,65,40,0.12);
+  --shadow-lg: 0 20px 50px rgba(40,30,15,0.22);
+  --rank-凡人: #a09889;
+  --rank-精锐: #7a9e6e;
+  --rank-勇者: #5d8290;
+  --rank-英雄: #8a6da5;
+  --rank-半神: #c9945a;
+  --rank-神祇: #b85d5d;
+  --q-普通: #a09889;
+  --q-精良: #6b9b5c;
+  --q-稀有: #4a7a9b;
+  --q-史诗: #7c5cc4;
+  --q-传说: #c9945a;
+  --q-神话: #b85d5d;
+  --hurt-无伤: #6b9b5c;
+  --hurt-轻伤: #c9a055;
+  --hurt-重伤: #c97845;
+  --hurt-濒死: #b85d5d;
+}
+.marble {
+  background-color: var(--marble-base);
+  background-image:
+    repeating-linear-gradient(115deg,
+      transparent 0px, transparent 45px,
+      rgba(160,150,130,0.05) 45px, rgba(160,150,130,0.05) 47px,
+      transparent 47px, transparent 110px),
+    radial-gradient(ellipse 800px 260px at 15% 25%, rgba(190,180,160,0.28), transparent 62%),
+    radial-gradient(ellipse 620px 380px at 85% 60%, rgba(170,160,140,0.22), transparent 58%),
+    radial-gradient(ellipse 520px 340px at 42% 88%, rgba(200,190,170,0.25), transparent 60%),
+    linear-gradient(135deg, #faf7f1 0%, #f0ebe0 55%, #ebe4d6 100%);
+}
+.marble-deep {
+  background-color: var(--marble-deep);
+  background-image:
+    repeating-linear-gradient(115deg,
+      transparent 0px, transparent 60px,
+      rgba(224,192,136,0.06) 60px, rgba(224,192,136,0.06) 62px,
+      transparent 62px, transparent 130px),
+    radial-gradient(ellipse 700px 200px at 20% 50%, rgba(224,192,136,0.12), transparent 65%),
+    radial-gradient(ellipse 500px 260px at 82% 45%, rgba(224,192,136,0.09), transparent 60%),
+    linear-gradient(135deg, #2a251e 0%, #3a332a 55%, #2a251e 100%);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: transparent;
+  color: var(--ink);
+  font-family: 'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  font-size: 13px;
+  padding: 8px;
+}
+.serif { font-family: 'Georgia','Noto Serif SC','Songti SC',serif; letter-spacing: 0.5px; }
+
+#tower-panel {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid var(--gold-dark);
+  box-shadow: 0 0 0 1px var(--gold-light), var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#tower-panel::before, #tower-panel::after {
+  content: ''; position: absolute; width: 22px; height: 22px;
+  border: 1px solid var(--gold); pointer-events: none; z-index: 5; opacity: 0.7;
+}
+#tower-panel::before { top: 7px; left: 7px; border-right: none; border-bottom: none; }
+#tower-panel::after  { bottom: 7px; right: 7px; border-left: none; border-top: none; }
+
+#worldbar {
+  padding: 12px 18px; color: var(--gold-light); font-size: 11.5px;
+  letter-spacing: 1px; display: flex; flex-wrap: wrap; align-items: center;
+  border-bottom: 1px solid var(--gold-dark); position: relative;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+#worldbar::after {
+  content: ''; position: absolute; bottom: -3px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.world-item {
+  display: inline-flex; align-items: center; gap: 5px; padding: 0 12px;
+  position: relative; text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.world-item + .world-item::before {
+  content: ''; position: absolute; left: 0; top: 50%; width: 1px; height: 10px;
+  background: linear-gradient(180deg, transparent, var(--gold-dark), transparent);
+  transform: translateY(-50%);
+}
+.world-item.rest { color: #f0c896; }
+
+#main { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+
+.observer-card {
+  border-radius: 6px; padding: 16px 18px;
+  border: 1px solid var(--gold-light);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), var(--shadow-sm);
+  position: relative;
+}
+.observer-head {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px; margin-bottom: 10px;
+  border-bottom: 1px solid var(--line); position: relative;
+}
+.observer-head::after {
+  content: ''; position: absolute; bottom: -1px; left: 0;
+  width: 40px; height: 1px; background: var(--gold);
+}
+.rank-badge {
+  padding: 4px 12px; border-radius: 2px; font-size: 11px; font-weight: 700;
+  color: #fff; letter-spacing: 2px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2); position: relative;
+}
+.rank-badge::before, .rank-badge::after {
+  content: ''; position: absolute; top: 50%; width: 3px; height: 3px;
+  border-radius: 50%; background: currentColor; opacity: 0.5; transform: translateY(-50%);
+}
+.rank-badge::before { left: 4px; }
+.rank-badge::after  { right: 4px; }
+.rank-凡人 { background: var(--rank-凡人); }
+.rank-精锐 { background: var(--rank-精锐); }
+.rank-勇者 { background: var(--rank-勇者); }
+.rank-英雄 { background: var(--rank-英雄); }
+.rank-半神 { background: var(--rank-半神); box-shadow: 0 0 8px rgba(201,148,90,0.5); }
+.rank-神祇 { background: var(--rank-神祇); box-shadow: 0 0 12px rgba(184,93,93,0.6); }
+
+.rank-mini {
+  display: inline-block; padding: 1px 7px; border-radius: 2px;
+  font-size: 9.5px; font-weight: 700; color: #fff; letter-spacing: 1px;
+  font-family: 'Georgia','Noto Serif SC',serif; vertical-align: middle;
+  margin-left: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.rank-temp {
+  display: inline-block; padding: 2px 8px; border-radius: 2px;
+  font-size: 10px; color: var(--gold-deep); letter-spacing: 1px;
+  border: 1px dashed var(--gold); margin-left: 6px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+
+.hurt-tag {
+  padding: 3px 10px; border-radius: 2px; font-size: 11px;
+  color: #fff; font-weight: 600; letter-spacing: 0.5px;
+}
+.hurt-无伤 { background: var(--hurt-无伤); }
+.hurt-轻伤 { background: var(--hurt-轻伤); }
+.hurt-重伤 { background: var(--hurt-重伤); }
+.hurt-濒死 { background: var(--hurt-濒死); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.55;} }
+
+.points-block { margin-left: auto; display: flex; align-items: baseline; gap: 6px; }
+.points-block .label {
+  color: var(--muted); font-size: 10.5px; letter-spacing: 1px;
+  font-family: 'Georgia',serif; text-transform: uppercase;
+}
+.points-block .value {
+  font-weight: 700; color: var(--gold-deep);
+  font-family: 'Georgia','Consolas',monospace; font-size: 17px; letter-spacing: 0.5px;
+}
+
+.observer-row {
+  display: flex; gap: 12px; padding: 6px 0; font-size: 12.5px;
+  align-items: flex-start;
+}
+.observer-row + .observer-row { border-top: 1px solid rgba(216,207,190,0.4); }
+.observer-row .label {
+  color: var(--muted); flex-shrink: 0; width: 62px; font-size: 11px;
+  letter-spacing: 1.5px; padding-top: 2px;
+  font-family: 'Georgia',serif; text-transform: uppercase;
+}
+.observer-row .value { flex: 1; word-break: break-word; }
+.observer-row .value .currency {
+  display: inline-flex; align-items: baseline; gap: 4px;
+  padding: 2px 8px; border-radius: 2px;
+  background: rgba(224,192,136,0.15);
+  border: 1px solid var(--gold-light);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--gold-deep);
+}
+.observer-row .value .currency .num {
+  font-weight: 700; font-size: 13px;
+}
+
+#entries { display: flex; gap: 8px; }
+.entry-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 15px 4px; text-align: center;
+  font-weight: 700; font-size: 12.5px; letter-spacing: 2px;
+  border-radius: 3px; cursor: pointer; user-select: none;
+  color: var(--gold-deep);
+  background-color: var(--marble-1);
+  background-image:
+    repeating-linear-gradient(115deg,
+      transparent 0, transparent 15px,
+      rgba(160,150,130,0.04) 15px, rgba(160,150,130,0.04) 16px,
+      transparent 16px, transparent 40px),
+    linear-gradient(135deg, #faf7f1 0%, #ede6d6 100%);
+  border: 1px solid var(--gold);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(120,100,60,0.08), 0 2px 5px rgba(80,65,40,0.1);
+  transition: all 0.2s ease;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+.entry-btn .ico { font-size: 14px; opacity: 0.85; }
+.entry-btn:hover {
+  border-color: var(--gold-dark); color: var(--gold-dark);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 4px 12px rgba(184,147,90,0.28);
+  transform: translateY(-1px);
+}
+
+.mask {
+  position: fixed; inset: 0; background: rgba(28,22,15,0.55);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none;
+  transition: opacity 0.22s ease; padding: 16px;
+}
+.mask.show { opacity: 1; pointer-events: auto; }
+.modal {
+  border-radius: 8px; border: 1px solid var(--gold-dark);
+  box-shadow: 0 0 0 1px var(--gold-light), var(--shadow-lg);
+  width: 100%; max-width: 560px; max-height: 86vh;
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+.modal::before, .modal::after {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  border: 1px solid var(--gold); pointer-events: none; z-index: 5; opacity: 0.6;
+}
+.modal::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.modal::after  { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+.modal-head {
+  padding: 14px 20px; font-size: 14px; font-weight: 700;
+  border-bottom: 1px solid var(--gold-light);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0; color: var(--gold-deep); letter-spacing: 3px;
+  font-family: 'Georgia','Noto Serif SC',serif; position: relative;
+}
+.modal-head::after {
+  content: ''; position: absolute; bottom: -1px; left: 20px;
+  width: 50px; height: 1px; background: var(--gold);
+}
+.close-btn {
+  cursor: pointer; font-size: 15px; color: var(--muted);
+  background: transparent; border: 1px solid transparent;
+  width: 26px; height: 26px; border-radius: 2px;
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  font-family: 'Georgia',serif;
+}
+.close-btn:hover {
+  border-color: var(--gold); color: var(--gold-deep);
+  background: rgba(224,192,136,0.12);
+}
+.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.scroll::-webkit-scrollbar { width: 6px; }
+.scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  border-radius: 3px;
+}
+.scroll::-webkit-scrollbar-track { background: rgba(216,207,190,0.3); }
+
+.tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.tab {
+  padding: 8px 16px; font-size: 12px; cursor: pointer; color: var(--muted);
+  letter-spacing: 1.5px; transition: all 0.15s; position: relative;
+  font-family: 'Georgia','Noto Serif SC',serif; background: transparent;
+}
+.tab.active { color: var(--gold-deep); font-weight: 700; }
+.tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.tab:hover:not(.active) { color: var(--gold-dark); }
+
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.char-card {
+  display: flex; align-items: center; gap: 10px; padding: 10px;
+  border-radius: 4px; cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--line); background: rgba(255,255,255,0.6);
+  box-shadow: var(--shadow-sm); position: relative;
+}
+.char-card:hover {
+  transform: translateY(-2px); border-color: var(--gold-light);
+  box-shadow: 0 6px 16px rgba(184,147,90,0.2);
+  background: rgba(255,255,255,0.9);
+}
+.char-card.unrecruited { opacity: 0.72; filter: grayscale(0.35); }
+.char-avatar {
+  width: 42px; height: 42px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 17px; flex-shrink: 0;
+  background: linear-gradient(135deg, #b3a68d, #8a7a60);
+  border: 2px solid #dcc7cb;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.char-name {
+  font-weight: 600; font-size: 13px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+}
+.char-sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+.b-凡人 { border-color: var(--rank-凡人); }
+.b-精锐 { border-color: var(--rank-精锐); }
+.b-勇者 { border-color: var(--rank-勇者); }
+.b-英雄 { border-color: var(--rank-英雄); }
+.b-半神 { border-color: var(--rank-半神); box-shadow: 0 0 10px rgba(201,148,90,0.35); }
+.b-神祇 { border-color: var(--rank-神祇); box-shadow: 0 0 12px rgba(184,93,93,0.4); }
+
+.char-detail { display: flex; gap: 18px; }
+.detail-left {
+  width: 130px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+}
+.detail-avatar {
+  width: 100px; height: 100px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; color: #fff; font-weight: 700;
+  background: linear-gradient(135deg, #b3a68d, #8a7a60);
+  border: 3px solid #dcc7cb;
+  box-shadow: var(--shadow-sm);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.detail-name {
+  font-size: 16px; font-weight: 700; margin-top: 10px;
+  text-align: center;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--gold-deep); letter-spacing: 1px;
+}
+.detail-rank {
+  margin-top: 6px; padding: 3px 12px; border-radius: 2px;
+  font-size: 10.5px; font-weight: 700; color: #fff; letter-spacing: 1.5px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.detail-meta {
+  font-size: 10.5px; color: var(--muted); text-align: center;
+  margin-top: 8px; line-height: 1.7;
+}
+.detail-right { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.bar-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 11px;
+}
+.bar-row .label {
+  width: 44px; color: var(--muted); flex-shrink: 0;
+  letter-spacing: 1.5px; font-family: 'Georgia',serif;
+}
+.bar-track {
+  flex: 1; height: 6px; background: rgba(216,207,190,0.5);
+  overflow: hidden; border: 1px solid var(--line); position: relative;
+}
+.bar-fill { height: 100%; transition: width 0.4s ease; }
+.fill-fav { background: linear-gradient(90deg, #e8b8c5, #b85d7d); }
+.fill-cor { background: linear-gradient(90deg, #c9b8c9, #7c5cc4); }
+.fill-dev { background: linear-gradient(90deg, #e8c9a8, #b8895a); }
+.bar-num {
+  width: 32px; text-align: right; font-weight: 700; font-size: 11px;
+  color: var(--gold-deep); font-family: 'Georgia',monospace;
+}
+
+.block { margin-bottom: 14px; }
+.block-title {
+  font-size: 11px; color: var(--gold-dark); font-weight: 700;
+  margin-bottom: 6px; letter-spacing: 2px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-transform: uppercase; padding-bottom: 4px;
+  border-bottom: 1px solid var(--gold-light);
+  position: relative; display: inline-block;
+}
+.kv-row {
+  display: flex; gap: 10px; padding: 3px 0; font-size: 11.5px; line-height: 1.6;
+}
+.kv-row .k { color: var(--muted); flex-shrink: 0; min-width: 52px; font-weight: 500; }
+.kv-row .v { flex: 1; word-break: break-word; color: var(--ink-2); }
+
+.quote-block {
+  padding: 10px 14px 10px 22px;
+  background: rgba(224,192,136,0.08);
+  border-left: 2px solid var(--gold);
+  font-style: italic; color: var(--ink-2);
+  font-size: 11.5px; line-height: 1.7;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  position: relative;
+}
+.quote-block::before {
+  content: '"'; position: absolute; top: -2px; left: 4px;
+  font-size: 28px; color: var(--gold-light);
+  font-family: 'Georgia',serif; line-height: 1;
+}
+
+.text-block {
+  font-size: 11.5px; line-height: 1.75; color: var(--ink-2);
+  padding: 8px 12px; background: rgba(255,255,255,0.5);
+  border-left: 2px solid var(--gold-light);
+}
+
+.q-普通 { border-left-color: var(--q-普通) !important; }
+.q-精良 { border-left-color: var(--q-精良) !important; }
+.q-稀有 { border-left-color: var(--q-稀有) !important; }
+.q-史诗 { border-left-color: var(--q-史诗) !important; }
+.q-传说 { border-left-color: var(--q-传说) !important; }
+.q-神话 { border-left-color: var(--q-神话) !important; }
+
+.skill-card {
+  background: rgba(255,255,255,0.65); border-radius: 3px;
+  padding: 10px 14px; margin-bottom: 8px;
+  border-left: 3px solid var(--gold);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.skill-card.temp {
+  border-left-style: dashed; border-left-color: var(--gold-light);
+  background: linear-gradient(135deg, rgba(250,247,241,0.9), rgba(240,235,224,0.8));
+}
+.skill-body { flex: 1; min-width: 0; }
+.skill-name {
+  font-weight: 700; font-size: 12.5px; margin-bottom: 4px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--ink); letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.skill-lv {
+  font-size: 10px; padding: 1px 7px; border-radius: 2px;
+  background: var(--gold-deep); color: #fff;
+  font-family: 'Georgia',monospace; font-weight: 700;
+  letter-spacing: 1px;
+}
+.skill-desc { font-size: 11px; color: var(--muted); line-height: 1.65; }
+.skill-src { font-size: 10.5px; color: var(--gold-dark); margin-top: 4px; font-style: italic; }
+
+.item-card {
+  background: rgba(255,255,255,0.65); border-radius: 3px;
+  padding: 9px 12px; margin-bottom: 6px;
+  border-left: 3px solid var(--muted);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.item-name {
+  font-weight: 600; font-size: 12px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+.item-slot-tag {
+  font-size: 10px; color: var(--gold-dark); letter-spacing: 1.5px;
+  padding: 1px 6px; border: 1px solid var(--gold-light); border-radius: 2px;
+  background: rgba(224,192,136,0.1);
+  font-family: 'Georgia','Noto Serif SC',serif; text-transform: uppercase;
+}
+.item-qty {
+  font-size: 10.5px; color: var(--gold-deep);
+  background: rgba(224,192,136,0.22);
+  padding: 1px 7px; border-radius: 2px; font-weight: 700;
+  font-family: 'Georgia',monospace; letter-spacing: 0.5px;
+}
+.item-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin-top: 3px; }
+
+.quest-card {
+  border-radius: 3px; padding: 12px 14px; margin-bottom: 10px;
+  background: rgba(255,255,255,0.65);
+  border-left: 3px solid var(--muted);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.quest-card.main {
+  border-left-color: var(--gold);
+  background: linear-gradient(135deg, rgba(250,247,241,0.95), rgba(240,232,215,0.85));
+}
+.quest-card.side { border-left-color: var(--q-稀有); }
+.quest-card.odd  { border-left-color: var(--q-精良); }
+.quest-card.done { opacity: 0.55; }
+.quest-card.done .quest-name { text-decoration: line-through; }
+.quest-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px; margin-bottom: 6px;
+}
+.quest-name {
+  font-weight: 700; font-size: 12.5px; flex: 1;
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 0.5px;
+}
+.quest-badge {
+  font-size: 10px; padding: 2px 9px; border-radius: 2px;
+  background: rgba(216,207,190,0.4); color: var(--muted);
+  flex-shrink: 0; letter-spacing: 1px; font-family: 'Georgia',serif;
+}
+.quest-badge.done { background: rgba(107,155,92,0.18); color: var(--q-精良); }
+
+.building-card {
+  background: rgba(255,255,255,0.65); border-radius: 3px;
+  padding: 11px 14px; margin-bottom: 8px;
+  border-left: 3px solid var(--gold);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.building-name {
+  font-weight: 700; font-size: 12.5px; margin-bottom: 4px;
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 0.5px;
+}
+.building-desc { font-size: 11.5px; color: var(--muted); line-height: 1.65; }
+
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
+  width: 1px; background: linear-gradient(180deg, transparent, var(--gold), transparent);
+}
+.timeline-item {
+  position: relative; padding: 6px 0 14px; font-size: 12px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+.timeline-item::before {
+  content: ''; position: absolute; left: -20px; top: 10px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold-dark));
+  box-shadow: 0 0 0 2px var(--marble-base), 0 0 0 3px var(--gold-light);
+}
+.timeline-item .tl-name {
+  color: var(--gold-deep); font-weight: 700; margin-bottom: 4px;
+  letter-spacing: 1px; font-size: 13px;
+}
+.timeline-item .tl-summary {
+  font-family: 'Noto Sans SC',sans-serif;
+  font-size: 11.5px; color: var(--ink-2); line-height: 1.65;
+  padding-left: 2px;
+}
+
+.title-card {
+  padding: 10px 14px; margin-bottom: 8px;
+  background: linear-gradient(135deg, rgba(250,247,241,0.9), rgba(240,232,215,0.85));
+  border-left: 3px solid var(--gold);
+  border-top: 1px solid var(--gold-light);
+  border-right: 1px solid var(--gold-light);
+  border-bottom: 1px solid var(--gold-light);
+  box-shadow: var(--shadow-sm);
+  border-radius: 3px;
+}
+.title-card .title-name {
+  font-family: 'Georgia','Noto Serif SC',serif;
+  font-weight: 700; font-size: 13px; color: var(--gold-deep);
+  letter-spacing: 2px; margin-bottom: 4px;
+}
+.title-card .title-desc {
+  font-size: 11px; color: var(--muted); line-height: 1.6; font-style: italic;
+}
+
+.empty-tip {
+  padding: 40px 20px; text-align: center; color: var(--muted);
+  font-size: 12px; font-style: italic;
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 1px;
+}
+
+.section-group { margin-bottom: 16px; }
+.section-title {
+  font-size: 11px; color: var(--gold-dark); letter-spacing: 2.5px;
+  padding: 4px 0 7px; border-bottom: 1px solid var(--gold-light);
+  margin-bottom: 10px; font-weight: 700;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-transform: uppercase; position: relative;
+}
+.section-title::after {
+  content: ''; position: absolute; bottom: -1px; left: 0;
+  width: 30px; height: 2px; background: var(--gold);
+}
+
+.clothes-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+}
+.clothes-cell {
+  background: rgba(255,255,255,0.55); border-radius: 3px;
+  padding: 9px 11px; font-size: 11px;
+  border: 1px solid var(--line); border-left: 3px solid var(--gold-light);
+}
+.clothes-cell .slot {
+  color: var(--gold-dark); font-weight: 700; font-size: 10.5px;
+  margin-bottom: 4px; letter-spacing: 1.5px;
+  font-family: 'Georgia','Noto Serif SC',serif; text-transform: uppercase;
+}
+.clothes-item { font-size: 11px; line-height: 1.65; color: var(--ink-2); }
+.clothes-item .state {
+  font-size: 10px; padding: 1px 6px; border-radius: 2px;
+  margin-left: 4px; letter-spacing: 0.5px;
+}
+.st-normal { background: rgba(107,155,92,0.18); color: var(--q-精良); }
+.st-mess   { background: rgba(201,160,85,0.22); color: #8a6d20; }
+.st-damage { background: rgba(201,120,69,0.22); color: #8a4a20; }
+.st-off    { background: rgba(184,93,93,0.2); color: var(--q-神话); }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-tag {
+  font-size: 11px; padding: 3px 11px; border-radius: 2px;
+  background: linear-gradient(135deg, rgba(250,247,241,0.9), rgba(240,232,215,0.9));
+  color: var(--gold-deep); font-weight: 600;
+  border: 1px solid var(--gold-light);
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 0.5px;
+  display: inline-flex; align-items: baseline; gap: 5px;
+}
+.skill-tag .lv {
+  font-size: 9px; color: var(--gold-dark);
+  font-family: 'Georgia',monospace; font-weight: 700;
+}
+.skill-tag.empty {
+  background: transparent; border: 1px dashed var(--line-2);
+  color: var(--muted-2); font-weight: 400; font-style: italic;
+}
+
+.part-row {
+  display: flex; gap: 10px; padding: 6px 0;
+  border-bottom: 1px dashed rgba(216,207,190,0.5);
+  font-size: 11.5px;
+}
+.part-row:last-child { border-bottom: none; }
+.part-row .part-name {
+  color: var(--gold-dark); font-weight: 700;
+  flex-shrink: 0; min-width: 42px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 1px;
+}
+.part-row .part-body { flex: 1; }
+.part-row .part-appear {
+  color: var(--muted); font-size: 11px; line-height: 1.5;
+}
+.part-row .part-status {
+  color: var(--ink); font-size: 11.5px; line-height: 1.5;
+  margin-top: 2px;
+}
+
+.dev-row {
+  padding: 8px 12px; margin-bottom: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.55);
+  border-left: 3px solid var(--gold);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.dev-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 4px;
+}
+.dev-name {
+  font-weight: 700; font-size: 12px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--ink);
+}
+.dev-lv {
+  font-size: 10px; padding: 1px 8px; border-radius: 2px;
+  background: var(--gold-deep); color: #fff;
+  font-family: 'Georgia',monospace; font-weight: 700;
+  letter-spacing: 1px;
+}
+.dev-lv.max { background: var(--q-神话); }
+.dev-body { font-size: 11px; color: var(--muted); line-height: 1.55; }
+.dev-body .react { color: var(--ink-2); }
+.dev-body .detail { font-style: italic; margin-top: 2px; }
+
+.fetish-card {
+  padding: 10px 12px; margin-bottom: 8px; border-radius: 3px;
+  background: rgba(255,255,255,0.6);
+  border-left: 3px solid var(--q-史诗);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.fetish-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px; margin-bottom: 6px;
+}
+.fetish-name {
+  font-weight: 700; font-size: 12px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+.fetish-desc {
+  font-size: 11px; color: var(--muted); line-height: 1.6;
+  margin-bottom: 6px;
+}
+.fetish-dev-bar {
+  display: flex; align-items: center; gap: 8px; font-size: 10.5px;
+}
+.fetish-dev-bar .label {
+  color: var(--muted); letter-spacing: 1px;
+  font-family: 'Georgia',serif;
+}
+.fetish-dev-bar .track {
+  flex: 1; height: 5px; background: rgba(216,207,190,0.5);
+  border: 1px solid var(--line);
+}
+.fetish-dev-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e8c9a8, #b8895a);
+}
+.fetish-dev-bar .num {
+  font-weight: 700; color: var(--gold-deep);
+  font-family: 'Georgia',monospace;
+  min-width: 26px; text-align: right;
+}
+
+.period-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+}
+.period-item {
+  display: flex; justify-content: space-between;
+  font-size: 11px; padding: 2px 0;
+  border-bottom: 1px dashed rgba(216,207,190,0.4);
+}
+.period-item .k { color: var(--muted); }
+.period-item .v {
+  color: var(--ink); font-weight: 600;
+  font-family: 'Georgia',monospace;
+}
+.period-phase {
+  display: inline-block; padding: 3px 10px; border-radius: 2px;
+  font-size: 11px; font-weight: 700;
+  color: #fff; letter-spacing: 1px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  margin-bottom: 8px;
+}
+.phase-经期   { background: #b85d5d; }
+.phase-卵泡期 { background: #7a9e6e; }
+.phase-排卵期 { background: #c9945a; }
+.phase-黄体期 { background: #8a6da5; }
+</style>
+</head>
+<body>
+<div id="tower-panel" class="marble">
+  <div id="worldbar" class="marble-deep"></div>
+  <div id="main">
+    <div class="observer-card marble" id="observer-card"></div>
+    <div id="entries">
+      <div class="entry-btn" id="entry-observer"><span class="ico">✦</span>观测者</div>
+      <div class="entry-btn" id="entry-char"><span class="ico">◆</span>角色</div>
+      <div class="entry-btn" id="entry-task"><span class="ico">✎</span>任务</div>
+      <div class="entry-btn" id="entry-building"><span class="ico">⌂</span>高塔</div>
+      <div class="entry-btn" id="entry-history"><span class="ico">⏳</span>历史</div>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mask-observer">
+  <div class="modal marble">
+    <div class="modal-head">观测者终端 <button class="close-btn" data-close="mask-observer">✕</button></div>
+    <div class="modal-body scroll" id="observer-detail"></div>
+  </div>
+</div>
+<div class="mask" id="mask-char-list">
+  <div class="modal marble">
+    <div class="modal-head">角色名录 <button class="close-btn" data-close="mask-char-list">✕</button></div>
+    <div class="modal-body scroll" id="char-list-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-char-detail">
+  <div class="modal marble">
+    <div class="modal-head">角色详情 <button class="close-btn" data-close="mask-char-detail">✕</button></div>
+    <div class="modal-body scroll" id="char-detail-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-task">
+  <div class="modal marble">
+    <div class="modal-head">任务档案 <button class="close-btn" data-close="mask-task">✕</button></div>
+    <div class="modal-body scroll" id="task-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-building">
+  <div class="modal marble">
+    <div class="modal-head">高塔建筑 <button class="close-btn" data-close="mask-building">✕</button></div>
+    <div class="modal-body scroll" id="building-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-history">
+  <div class="modal marble">
+    <div class="modal-head">历史记录 <button class="close-btn" data-close="mask-history">✕</button></div>
+    <div class="modal-body scroll" id="history-body"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ============================================================
+  // 空骨架（ST 拿不到数据时使用，避免渲染崩溃）
+  // ============================================================
+  const EMPTY_DATA = {
+    世界: { 纪元: '—', 天气: '—', 时间: { 时: 0, 分: 0 }, 已进入位面时间: 0, 休息剩余天数: 0, 当前位面: '高塔' },
+    历史: { 已完成位面: {}, 称号: {} },
+    观测者信息: {
+      姓名: '观测者', 性别: '男',
+      永久品级: '凡人', 当前品级: '凡人',
+      伤势状态: '无伤', 当前状态: '', 位面身份: '', 当前场景: '',
+      观测点: 0, 位面货币: { 单位: '', 数量: 0 },
+      当前装备: {}, 永久技能: {}, 临时技能: {}, 持有物品: {}
+    },
+    角色: {},
+    任务: { 主线任务: {}, 支线任务: {}, 奇遇任务: {} },
+    建筑: {}
+  };
+
+  function getVariables() {
+    try {
+      if (typeof getAllVariables === 'function') {
+        const all = getAllVariables();
+        if (all && Object.keys(all).length) return all.stat_data || all;
+      }
+    } catch(e) {}
+    return EMPTY_DATA;
+  }
+  function getVar(path, def) {
+    try {
+      const v = (typeof _ !== 'undefined' && _.get) ? _.get(getVariables(), path, def) : dig(getVariables(), path, def);
+      return v === undefined || v === null ? def : v;
+    } catch(e) { return def; }
+  }
+  function dig(obj, path, def) {
+    const parts = String(path).split('.');
+    let cur = obj;
+    for (const p of parts) {
+      if (cur == null || typeof cur !== 'object') return def;
+      cur = cur[p];
+    }
+    return cur === undefined ? def : cur;
+  }
+  function esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function toNum(v, def) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : (def ?? 0);
+  }
+  function sortedEntries(obj) {
+    if (!obj || typeof obj !== 'object') return [];
+    return Object.entries(obj).sort(([a],[b]) => String(a).localeCompare(String(b), 'zh'));
+  }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function fmtTime(t) {
+    if (!t || typeof t !== 'object') return '--:--';
+    return pad2(toNum(t.时, 0)) + ':' + pad2(toNum(t.分, 0));
+  }
+
+  // ============================================================
+  // 世界条
+  // ============================================================
+  function renderWorldbar() {
+    const era    = getVar('世界.纪元', '—');
+    const plane  = getVar('世界.当前位面', '高塔');
+    const day    = toNum(getVar('世界.已进入位面时间', 0), 0);
+    const time   = getVar('世界.时间', {});
+    const weather = getVar('世界.天气', '—');
+    const rest   = toNum(getVar('世界.休息剩余天数', 0), 0);
+
+    const weatherEmoji = (() => {
+      const w = String(weather);
+      if (/晴/.test(w)) return '☀';
+      if (/雨/.test(w)) return '☂';
+      if (/雪/.test(w)) return '❄';
+      if (/雾/.test(w)) return '☁';
+      if (/雷/.test(w)) return '⚡';
+      if (/风/.test(w)) return '≈';
+      if (/阴/.test(w)) return '☁';
+      return '◈';
+    })();
+
+    const inTower = plane === '高塔';
+    let html = `
+      <span class="world-item">${esc(era)}</span>
+      <span class="world-item">${esc(plane)}</span>
+    `;
+    if (inTower && rest > 0) {
+      html += `<span class="world-item rest">休息中 · 剩 ${rest} 日</span>`;
+    } else if (!inTower) {
+      html += `<span class="world-item">第 ${day} 日</span>`;
+      html += `<span class="world-item">${fmtTime(time)}</span>`;
+      html += `<span class="world-item">${weatherEmoji} ${esc(weather)}</span>`;
+    } else {
+      html += `<span class="world-item">${fmtTime(time)}</span>`;
+    }
+    document.getElementById('worldbar').innerHTML = html;
+  }
+
+  // ============================================================
+  // 观测者主卡
+  // ============================================================
+  function renderObserverCard() {
+    const info = getVar('观测者信息', {});
+    const name = info.姓名 || '观测者';
+    const rank = info.当前品级 || info.永久品级 || '凡人';
+    const permRank = info.永久品级 || '凡人';
+    const hurt = info.伤势状态 || '无伤';
+    const points = toNum(info.观测点, 0);
+    const scene = info.当前场景 || '—';
+    const status = info.当前状态 || '—';
+    const planeId = info.位面身份 || '';
+    const currency = info.位面货币 || {};
+    const inTower = getVar('世界.当前位面', '高塔') === '高塔';
+
+    let rankHtml = `<span class="rank-badge rank-${esc(rank)}">${esc(rank)}</span>`;
+    if (rank !== permRank) {
+      rankHtml += `<span class="rank-temp">永久 · ${esc(permRank)}</span>`;
+    }
+
+    let currencyHtml = '';
+    if (!inTower && currency.单位 && toNum(currency.数量, 0) > 0) {
+      currencyHtml = `<div class="observer-row">
+        <span class="label">货币</span>
+        <span class="value">
+          <span class="currency">
+            <span class="num">${toNum(currency.数量, 0).toLocaleString()}</span>
+            <span>${esc(currency.单位)}</span>
+          </span>
+        </span>
+      </div>`;
+    }
+
+    document.getElementById('observer-card').innerHTML = `
+      <div class="observer-head">
+        ${rankHtml}
+        <span class="hurt-tag hurt-${esc(hurt)}">${esc(hurt)}</span>
+        <div class="points-block">
+          <span class="label">观测点</span>
+          <span class="value">${points.toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="observer-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
+      ${!inTower && planeId ? `<div class="observer-row"><span class="label">身份</span><span class="value">${esc(planeId)}</span></div>` : ''}
+      <div class="observer-row"><span class="label">场景</span><span class="value">${esc(scene)}</span></div>
+      <div class="observer-row"><span class="label">状态</span><span class="value">${esc(status)}</span></div>
+      ${currencyHtml}
+    `;
+  }
+
+  // ============================================================
+  // 观测者详情
+  // ============================================================
+  function openObserverDetail() {
+    renderObserverTab('equip');
+    document.getElementById('mask-observer').classList.add('show');
+  }
+
+  function renderObserverTab(tab) {
+    const body = document.getElementById('observer-detail');
+    body.innerHTML = `
+      <div class="tabs">
+        <div class="tab ${tab==='equip'?'active':''}" data-obs-tab="equip">装备</div>
+        <div class="tab ${tab==='skill'?'active':''}" data-obs-tab="skill">技能</div>
+        <div class="tab ${tab==='item'?'active':''}" data-obs-tab="item">物品</div>
+      </div>
+      <div id="observer-tab-content"></div>
+    `;
+    body.querySelectorAll('[data-obs-tab]').forEach(el => {
+      el.addEventListener('click', () => renderObserverTab(el.dataset.obsTab));
+    });
+
+    const content = document.getElementById('observer-tab-content');
+    const info = getVar('观测者信息', {});
+
+    if (tab === 'equip') {
+      const equip = info.当前装备 || {};
+      const entries = sortedEntries(equip);
+      if (!entries.length) {
+        content.innerHTML = '<div class="empty-tip">未装备任何物品</div>';
+        return;
+      }
+      let html = '';
+      entries.forEach(([slot, item]) => {
+        const name = (item && item.名称) || '—';
+        const quality = (item && item.品质) || '普通';
+        html += `<div class="item-card q-${esc(quality)}">
+          <div class="item-name">
+            <span class="item-slot-tag">${esc(slot)}</span>
+            ${esc(name)}
+            <span class="item-qty">${esc(quality)}</span>
+          </div>
+        </div>`;
+      });
+      content.innerHTML = html;
+
+    } else if (tab === 'skill') {
+      const perm = info.永久技能 || {};
+      const temp = info.临时技能 || {};
+      let html = '';
+      const permEntries = sortedEntries(perm);
+      if (permEntries.length) {
+        html += `<div class="section-title">永久技能</div>`;
+        permEntries.forEach(([name, s]) => {
+          html += `<div class="skill-card">
+            <div class="skill-body">
+              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span></div>
+              <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
+              ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
+            </div>
+          </div>`;
+        });
+      }
+      const tempEntries = sortedEntries(temp);
+      if (tempEntries.length) {
+        html += `<div class="section-title" style="margin-top:16px;">临时技能</div>`;
+        tempEntries.forEach(([name, s]) => {
+          html += `<div class="skill-card temp">
+            <div class="skill-body">
+              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span></div>
+              <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
+              ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
+            </div>
+          </div>`;
+        });
+      }
+      if (!html) html = '<div class="empty-tip">尚未掌握任何技能</div>';
+      content.innerHTML = html;
+
+    } else {
+      const items = info.持有物品 || {};
+      const entries = sortedEntries(items);
+      if (!entries.length) {
+        content.innerHTML = '<div class="empty-tip">囊中空空</div>';
+        return;
+      }
+      const groups = {};
+      const typeOrder = ['武器','防具','饰品','消耗品','特殊'];
+      entries.forEach(([name, item]) => {
+        const t = item.类型 || '特殊';
+        (groups[t] = groups[t] || []).push([name, item]);
+      });
+      const qOrder = { '普通':0,'精良':1,'稀有':2,'史诗':3,'传说':4,'神话':5 };
+      let html = '';
+      const allTypes = [...typeOrder.filter(t=>groups[t]), ...Object.keys(groups).filter(t=>!typeOrder.includes(t))];
+      allTypes.forEach(type => {
+        const list = groups[type].slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0));
+        html += `<div class="section-group"><div class="section-title">${esc(type)} · ${list.length}</div>`;
+        list.forEach(([name, item]) => {
+          html += `<div class="item-card q-${esc(item.品质||'普通')}">
+            <div class="item-name">
+              ${esc(item.名称||name)}
+              ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
+            </div>
+            ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
+          </div>`;
+        });
+        html += `</div>`;
+      });
+      content.innerHTML = html;
+    }
+  }
+
+  // ============================================================
+  // 角色列表
+  // ============================================================
+  function openCharList() {
+    const body = document.getElementById('char-list-body');
+    const entries = sortedEntries(getVar('角色', {}));
+    if (!entries.length) {
+      body.innerHTML = '<div class="empty-tip">暂无角色记录</div>';
+    } else {
+      body.innerHTML = `<div class="card-grid">${
+        entries.map(([key, c]) => {
+          const n = c.普通 || {};
+          const rank = n.品级 || '凡人';
+          const name = n.姓名 || key;
+          const state = n.状态 || '未收服';
+          const unrec = state === '未收服' ? 'unrecruited' : '';
+          return `<div class="char-card ${unrec}" data-char-key="${esc(key)}">
+            <div class="char-avatar b-${esc(rank)}">${esc(name.slice(0,1))}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="char-name">
+                ${esc(name)}
+                <span class="rank-mini rank-${esc(rank)}">${esc(rank)}</span>
+              </div>
+              <div class="char-sub">${esc(n.身份||'')}</div>
+              <div class="char-sub">· ${esc(state)} ·</div>
+            </div>
+          </div>`;
+        }).join('')
+      }</div>`;
+      body.querySelectorAll('[data-char-key]').forEach(el => {
+        el.addEventListener('click', () => {
+          document.getElementById('mask-char-list').classList.remove('show');
+          openCharDetail(el.dataset.charKey);
+        });
+      });
+    }
+    document.getElementById('mask-char-list').classList.add('show');
+  }
+
+  // ============================================================
+  // 角色详情
+  // ============================================================
+  function openCharDetail(key) {
+    const c = getVar('角色.' + key, {});
+    if (!c) return;
+    const n = c.普通 || {};
+    const name = n.姓名 || key;
+    const rank = n.品级 || '凡人';
+    const fav = toNum(n.好感度, 0);
+    const cor = toNum(n.堕落值, 0);
+
+    const body = document.getElementById('char-detail-body');
+    body.innerHTML = `
+      <div class="char-detail">
+        <div class="detail-left">
+          <div class="detail-avatar b-${esc(rank)}">${esc(name.slice(0,1))}</div>
+          <div class="detail-name">${esc(name)}</div>
+          <div class="detail-rank rank-${esc(rank)}">${esc(rank)}</div>
+          <div class="detail-meta">
+            ${n.年龄!=null ? esc(n.年龄)+' 岁' : ''}<br>
+            ${esc(n.身份||'')}<br>
+            <span style="color:var(--gold-dark);">来源 · ${esc(n.来源位面||'未知')}</span><br>
+            <span style="color:var(--gold-dark);">状态 · ${esc(n.状态||'未收服')}</span>
+          </div>
+        </div>
+        <div class="detail-right">
+          <div class="bar-row">
+            <span class="label">好感</span>
+            <div class="bar-track"><div class="bar-fill fill-fav" style="width:${Math.max(0,Math.min(100,fav))}%"></div></div>
+            <span class="bar-num">${fav}</span>
+          </div>
+          <div class="bar-row">
+            <span class="label">堕落</span>
+            <div class="bar-track"><div class="bar-fill fill-cor" style="width:${Math.max(0,Math.min(100,cor))}%"></div></div>
+            <span class="bar-num">${cor}</span>
+          </div>
+          <div class="tabs" style="margin-top:10px;">
+            <div class="tab active" data-char-tab="status">状态</div>
+            <div class="tab" data-char-tab="profile">档案</div>
+            <div class="tab" data-char-tab="nsfw">NSFW</div>
+          </div>
+          <div id="char-tab-content"></div>
+        </div>
+      </div>
+    `;
+    body.querySelectorAll('[data-char-tab]').forEach(el => {
+      el.addEventListener('click', () => {
+        body.querySelectorAll('[data-char-tab]').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderCharTab(key, el.dataset.charTab);
+      });
+    });
+    renderCharTab(key, 'status');
+    document.getElementById('mask-char-detail').classList.add('show');
+  }
+
+  function renderCharTab(key, tab) {
+    const c = getVar('角色.' + key, {});
+    const n = c.普通 || {};
+    const nsfw = c.NSFW || {};
+    const content = document.getElementById('char-tab-content');
+    if (!content) return;
+
+    if (tab === 'status') {
+      const equip = n.装备 || {};
+      const weapon = equip.武器 || {};
+      const cloth = equip.衣物 || {};
+      content.innerHTML = `
+        <div class="block">
+          <div class="block-title">当前情绪</div>
+          <div style="font-size:12.5px;">${esc(n.当前情绪 || '平静')}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">内心想法</div>
+          <div class="quote-block">${esc(n.当前内心想法 || '（没有记录）')}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">随身装备</div>
+          <div class="kv-row"><span class="k">武器</span><span class="v q-${esc(weapon.品质||'普通')}" style="padding-left:8px;border-left:2px solid;">${esc(weapon.名称||'空')}</span></div>
+          <div class="kv-row"><span class="k">衣物</span><span class="v q-${esc(cloth.品质||'普通')}" style="padding-left:8px;border-left:2px solid;">${esc(cloth.名称||'空')}</span></div>
+        </div>
+        <div class="block">
+          <div class="block-title">身份标签</div>
+          ${sortedEntries(n.身份标签 || {}).map(([k,v]) =>
+            `<div class="kv-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`
+          ).join('') || '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>'}
+        </div>
+      `;
+
+    } else if (tab === 'profile') {
+      const b = n.身体信息 || {};
+      const skills = n.技能 || {};
+      const skillList = sortedEntries(skills);
+      const skillsHtml = skillList.length
+        ? skillList.map(([sname, s]) =>
+            `<span class="skill-tag">${esc(sname)}<span class="lv">Lv.${toNum(s.等级, 1)}</span></span>`
+          ).join('')
+        : '<span class="skill-tag empty">暂无技能</span>';
+      content.innerHTML = `
+        <div class="block">
+          <div class="block-title">外貌</div>
+          ${n.外貌
+            ? `<div class="text-block">${esc(n.外貌)}</div>`
+            : `<div class="text-block" style="color:var(--muted);font-style:italic;">未描写</div>`}
+        </div>
+        <div class="block">
+          <div class="block-title">身体信息</div>
+          <div class="kv-row"><span class="k">身高</span><span class="v">${esc(b.身高??'—')} cm</span></div>
+          <div class="kv-row"><span class="k">体重</span><span class="v">${esc(b.体重??'—')} kg</span></div>
+          <div class="kv-row"><span class="k">三围</span><span class="v">${esc(b.三围||'—')}</span></div>
+          <div class="kv-row"><span class="k">体质</span><span class="v">${esc(b.体质特征||'—')}</span></div>
+        </div>
+        <div class="block">
+          <div class="block-title">技能</div>
+          <div class="tag-list">${skillsHtml}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">性格</div>
+          ${sortedEntries(n.性格||{}).map(([k,v]) =>
+            `<div class="kv-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`
+          ).join('') || '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>'}
+        </div>
+        <div class="block">
+          <div class="block-title">爱好</div>
+          ${sortedEntries(n.爱好||{}).map(([k,v]) =>
+            `<div class="kv-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`
+          ).join('') || '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>'}
+        </div>
+      `;
+
+    } else if (tab === 'nsfw') {
+      const sex = nsfw.性经验 || {};
+      const fetishes = nsfw.性癖 || {};
+      const clothes = nsfw.服装状态 || {};
+      const parts = nsfw.身体部位物理状态 || {};
+      const devPoints = nsfw.敏感点开发 || {};
+      const period = nsfw.生理周期 || {};
+
+      let fetishHtml = '';
+      const fetishEntries = sortedEntries(fetishes);
+      if (fetishEntries.length) {
+        fetishHtml = fetishEntries.map(([name, f]) => {
+          const dev = Math.max(0, Math.min(100, toNum(f.开发度, 0)));
+          return `<div class="fetish-card">
+            <div class="fetish-head">
+              <div class="fetish-name">${esc(name)}</div>
+            </div>
+            ${f.细节描述 ? `<div class="fetish-desc">${esc(f.细节描述)}</div>` : ''}
+            <div class="fetish-dev-bar">
+              <span class="label">开发度</span>
+              <div class="track"><div class="fill" style="width:${dev}%"></div></div>
+              <span class="num">${dev}</span>
+            </div>
+          </div>`;
+        }).join('');
+      } else {
+        fetishHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
+      }
+
+      const statusClass = (s) => {
+        const t = String(s||'');
+        if (/正常|完好|完整/.test(t)) return 'st-normal';
+        if (/凌乱|半脱|松散|卷起/.test(t)) return 'st-mess';
+        if (/破损|损坏|撕裂/.test(t)) return 'st-damage';
+        if (/脱|褪去|裸/.test(t)) return 'st-off';
+        return 'st-normal';
+      };
+      const clothesHtml = ['上装','下装','内衣','足部','腿部','饰品'].map(slot => {
+        const items = sortedEntries(clothes[slot] || {});
+        const itemsHtml = items.length
+          ? items.map(([cname, info]) =>
+              `<div class="clothes-item">${esc(cname)}<span class="state ${statusClass(info.状态)}">${esc(info.状态||'正常')}</span>${info.描述?`<div style="color:var(--muted);font-size:10.5px;margin-top:2px;">${esc(info.描述)}</div>`:''}</div>`
+            ).join('')
+          : '<div class="clothes-item" style="color:var(--muted-2);">—</div>';
+        return `<div class="clothes-cell"><div class="slot">${esc(slot)}</div>${itemsHtml}</div>`;
+      }).join('');
+
+      const PART_LIST = ['脸部','手部','胸部','乳头','小穴','后庭','脚部'];
+      const partsHtml = PART_LIST.map(part => {
+        const info = parts[part] || {};
+        const appear = info.外观描述 || '—';
+        const stat = info.当前状态 || '正常';
+        return `<div class="part-row">
+          <div class="part-name">${esc(part)}</div>
+          <div class="part-body">
+            <div class="part-appear">${esc(appear)}</div>
+            <div class="part-status">${esc(stat)}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      let devHtml = '';
+      const devEntries = sortedEntries(devPoints);
+      if (devEntries.length) {
+        devHtml = devEntries.map(([name, d]) => {
+          const lv = Math.max(0, Math.min(10, toNum(d.敏感等级, 0)));
+          return `<div class="dev-row">
+            <div class="dev-head">
+              <div class="dev-name">${esc(name)}</div>
+              <div class="dev-lv ${lv>=9?'max':''}">Lv.${lv}</div>
+            </div>
+            <div class="dev-body">
+              ${d.生理反应 ? `<div class="react">${esc(d.生理反应)}</div>` : ''}
+              ${d.开发细节 ? `<div class="detail">${esc(d.开发细节)}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      } else {
+        devHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
+      }
+
+      const phase = period.当前阶段 || '卵泡期';
+      const safeDays = toNum(period.安全期剩余天数, 0);
+      const ovDays = toNum(period.排卵期剩余天数, 0);
+      const periodHtml = `
+        <div class="period-phase phase-${esc(phase)}">${esc(phase)}</div>
+        <div class="period-grid">
+          <div class="period-item"><span class="k">周期长度</span><span class="v">${toNum(period.周期长度,28)} 天</span></div>
+          <div class="period-item"><span class="k">经期长度</span><span class="v">${toNum(period.经期长度,5)} 天</span></div>
+          <div class="period-item"><span class="k">距上次经期</span><span class="v">${toNum(period.距上次经期开始,0)} 天</span></div>
+          <div class="period-item"><span class="k">安全期剩余</span><span class="v">${safeDays} 天</span></div>
+          <div class="period-item"><span class="k">排卵期剩余</span><span class="v">${ovDays} 天</span></div>
+        </div>
+      `;
+
+      content.innerHTML = `
+        <div class="block">
+          <div class="block-title">基础记录</div>
+          <div class="kv-row"><span class="k">性经验</span><span class="v">${toNum(sex.累计次数,0)} 次 · ${toNum(sex.性伴侣人数,0)} 人</span></div>
+          <div class="kv-row"><span class="k">初次对象</span><span class="v">${esc(nsfw.初次性爱对象||'无')}</span></div>
+          <div class="kv-row"><span class="k">最近对象</span><span class="v">${esc(nsfw.最近性爱对象||'无')}</span></div>
+          <div class="kv-row"><span class="k">最近时间</span><span class="v">${esc(nsfw.最近性交时间||'无')}</span></div>
+          <div class="kv-row"><span class="k">最近地点</span><span class="v">${esc(nsfw.最近性交地点||'无')}</span></div>
+          <div class="kv-row"><span class="k">门槛类型</span><span class="v">${esc(nsfw.NSFW门槛类型||'普通型')}</span></div>
+        </div>
+        <div class="block">
+          <div class="block-title">性癖</div>
+          ${fetishHtml}
+        </div>
+        <div class="block">
+          <div class="block-title">服装状态</div>
+          <div class="clothes-grid">${clothesHtml}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">身体部位物理状态</div>
+          ${partsHtml}
+        </div>
+        <div class="block">
+          <div class="block-title">敏感点开发</div>
+          ${devHtml}
+        </div>
+        <div class="block">
+          <div class="block-title">生理周期</div>
+          ${periodHtml}
+        </div>
+      `;
+    }
+  }
+
+  // ============================================================
+  // 任务
+  // ============================================================
+  function openTaskModal() {
+    const body = document.getElementById('task-body');
+    const main = getVar('任务.主线任务', {});
+    const side = getVar('任务.支线任务', {});
+    const odd  = getVar('任务.奇遇任务', {});
+    let html = '';
+    if (main && main.名称) {
+      const done = main.状态 === '已完成';
+      html += `<div class="section-title">主线任务</div>
+        <div class="quest-card main ${done?'done':''}">
+          <div class="quest-head">
+            <div class="quest-name">${esc(main.名称)}</div>
+            <span class="quest-badge ${done?'done':''}">${esc(main.状态||'进行中')}</span>
+          </div>
+          ${main.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(main.描述)}</span></div>`:''}
+          ${main.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(main.奖励)}</span></div>`:''}
+        </div>`;
+    }
+    const sideEntries = sortedEntries(side);
+    if (sideEntries.length) {
+      html += `<div class="section-title" style="margin-top:16px;">支线任务</div>`;
+      sideEntries.forEach(([name, t]) => {
+        const done = t.状态 === '已完成';
+        html += `<div class="quest-card side ${done?'done':''}">
+          <div class="quest-head">
+            <div class="quest-name">${esc(name)}</div>
+            <span class="quest-badge ${done?'done':''}">${esc(t.状态||'进行中')}</span>
+          </div>
+          ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
+          ${t.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(t.奖励)}</span></div>`:''}
+        </div>`;
+      });
+    }
+    const oddEntries = sortedEntries(odd);
+    if (oddEntries.length) {
+      html += `<div class="section-title" style="margin-top:16px;">奇遇任务</div>`;
+      oddEntries.forEach(([name, t]) => {
+        const done = t.状态 === '已完成';
+        html += `<div class="quest-card odd ${done?'done':''}">
+          <div class="quest-head">
+            <div class="quest-name">${esc(name)}</div>
+            <span class="quest-badge ${done?'done':''}">${esc(t.状态||'进行中')}</span>
+          </div>
+          ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
+        </div>`;
+      });
+    }
+    if (!html) html = '<div class="empty-tip">暂无任务记录</div>';
+    body.innerHTML = html;
+    document.getElementById('mask-task').classList.add('show');
+  }
+
+  // ============================================================
+  // 建筑
+  // ============================================================
+  function openBuildingModal() {
+    const body = document.getElementById('building-body');
+    const entries = sortedEntries(getVar('建筑', {}));
+    if (!entries.length) {
+      body.innerHTML = '<div class="empty-tip">高塔中尚无建筑记载</div>';
+      document.getElementById('mask-building').classList.add('show');
+      return;
+    }
+    const groups = { '居所': [], '功能建筑': [] };
+    entries.forEach(e => {
+      const type = e[1].类型 || '功能建筑';
+      (groups[type] = groups[type] || []).push(e);
+    });
+    let html = '';
+    Object.keys(groups).forEach(type => {
+      if (!groups[type].length) return;
+      html += `<div class="section-title">${esc(type)}</div>`;
+      groups[type].forEach(([name, b]) => {
+        html += `<div class="building-card">
+          <div class="building-name">${esc(name)}</div>
+          ${b.描述?`<div class="building-desc">${esc(b.描述)}</div>`:''}
+        </div>`;
+      });
+    });
+    body.innerHTML = html;
+    document.getElementById('mask-building').classList.add('show');
+  }
+
+  // ============================================================
+  // 历史
+  // ============================================================
+  function openHistoryModal() {
+    const body = document.getElementById('history-body');
+    const planes = getVar('历史.已完成位面', {});
+    const titles = getVar('历史.称号', {});
+
+    let html = '';
+
+    const planeEntries = sortedEntries(planes);
+    if (planeEntries.length) {
+      html += `<div class="section-title">已完成位面</div>`;
+      html += `<div class="timeline">`;
+      planeEntries.forEach(([name, info], i) => {
+        const summary = info.总结 || '';
+        html += `<div class="timeline-item">
+          <div class="tl-name">${String(i+1).padStart(2,'0')} · ${esc(name)}</div>
+          ${summary ? `<div class="tl-summary">${esc(summary)}</div>` : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    const titleEntries = sortedEntries(titles);
+    if (titleEntries.length) {
+      html += `<div class="section-title" style="margin-top:20px;">称号</div>`;
+      titleEntries.forEach(([name, desc]) => {
+        html += `<div class="title-card">
+          <div class="title-name">${esc(name)}</div>
+          <div class="title-desc">${esc(desc)}</div>
+        </div>`;
+      });
+    }
+
+    if (!html) html = '<div class="empty-tip">尚无历史记录</div>';
+    body.innerHTML = html;
+    document.getElementById('mask-history').classList.add('show');
+  }
+
+  // ============================================================
+  // 事件
+  // ============================================================
+  function bindEvents() {
+    document.getElementById('entry-observer').addEventListener('click', openObserverDetail);
+    document.getElementById('entry-char').addEventListener('click', openCharList);
+    document.getElementById('entry-task').addEventListener('click', openTaskModal);
+    document.getElementById('entry-building').addEventListener('click', openBuildingModal);
+    document.getElementById('entry-history').addEventListener('click', openHistoryModal);
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById(btn.dataset.close).classList.remove('show');
+      });
+    });
+    document.querySelectorAll('.mask').forEach(mask => {
+      mask.addEventListener('click', e => {
+        if (e.target === mask) mask.classList.remove('show');
+      });
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const openMasks = Array.from(document.querySelectorAll('.mask.show'));
+        if (openMasks.length) openMasks[openMasks.length - 1].classList.remove('show');
+      }
+    });
+  }
+
+  function updateUI() {
+    renderWorldbar();
+    renderObserverCard();
+  }
+
+  function init() {
+    bindEvents();
+    updateUI();
+    try {
+      if (typeof eventOn === 'function' && window.Mvu && Mvu.events) {
+        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, updateUI);
+      }
+    } catch(e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
