@@ -230,20 +230,25 @@ body {
   transform: translateY(-1px);
 }
 
+/* ===== 弹窗：mask 滚动，modal 自由高度 ===== */
 .mask {
-  position: fixed; inset: 0; background: rgba(28,22,15,0.55);
+  position: fixed; inset: 0;
+  background: rgba(28,22,15,0.55);
   backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
   z-index: 1000; opacity: 0; pointer-events: none;
-  transition: opacity 0.22s ease; padding: 16px;
+  transition: opacity 0.22s ease;
+  padding: 40px 16px;
+  overflow-y: auto;
 }
 .mask.show { opacity: 1; pointer-events: auto; }
 .modal {
   border-radius: 8px; border: 1px solid var(--gold-dark);
   box-shadow: 0 0 0 1px var(--gold-light), var(--shadow-lg);
   width: 100%; max-width: 560px;
-  max-height: 92vh;
+  /* 不再限制 max-height，弹窗高度由内容决定 */
   display: flex; flex-direction: column; overflow: hidden; position: relative;
+  margin: auto 0;
 }
 .modal::before, .modal::after {
   content: ''; position: absolute; width: 16px; height: 16px;
@@ -273,7 +278,20 @@ body {
   border-color: var(--gold); color: var(--gold-deep);
   background: rgba(224,192,136,0.12);
 }
-.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; min-height: 0; }
+.modal-body {
+  padding: 16px 20px;
+  /* 取消 flex / overflow，弹窗内容完整展开 */
+}
+
+/* mask 的滚动条样式 */
+.mask::-webkit-scrollbar { width: 8px; }
+.mask::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  border-radius: 4px;
+}
+.mask::-webkit-scrollbar-track { background: rgba(40,30,15,0.2); }
+
+/* .scroll 类仍然保留给其他潜在用途 */
 .scroll::-webkit-scrollbar { width: 6px; }
 .scroll::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--gold-light), var(--gold));
@@ -784,45 +802,42 @@ body {
 <div class="mask" id="mask-observer">
   <div class="modal marble">
     <div class="modal-head">观测者终端 <button class="close-btn" data-close="mask-observer">✕</button></div>
-    <div class="modal-body scroll" id="observer-detail"></div>
+    <div class="modal-body" id="observer-detail"></div>
   </div>
 </div>
 <div class="mask" id="mask-char-list">
   <div class="modal marble">
     <div class="modal-head">角色名录 <button class="close-btn" data-close="mask-char-list">✕</button></div>
-    <div class="modal-body scroll" id="char-list-body"></div>
+    <div class="modal-body" id="char-list-body"></div>
   </div>
 </div>
 <div class="mask" id="mask-char-detail">
   <div class="modal marble">
     <div class="modal-head">角色详情 <button class="close-btn" data-close="mask-char-detail">✕</button></div>
-    <div class="modal-body scroll" id="char-detail-body"></div>
+    <div class="modal-body" id="char-detail-body"></div>
   </div>
 </div>
 <div class="mask" id="mask-task">
   <div class="modal marble">
     <div class="modal-head">任务档案 <button class="close-btn" data-close="mask-task">✕</button></div>
-    <div class="modal-body scroll" id="task-body"></div>
+    <div class="modal-body" id="task-body"></div>
   </div>
 </div>
 <div class="mask" id="mask-building">
   <div class="modal marble">
     <div class="modal-head">高塔建筑 <button class="close-btn" data-close="mask-building">✕</button></div>
-    <div class="modal-body scroll" id="building-body"></div>
+    <div class="modal-body" id="building-body"></div>
   </div>
 </div>
 <div class="mask" id="mask-history">
   <div class="modal marble">
     <div class="modal-head">历史记录 <button class="close-btn" data-close="mask-history">✕</button></div>
-    <div class="modal-body scroll" id="history-body"></div>
+    <div class="modal-body" id="history-body"></div>
   </div>
 </div>
 
 <script>
 (function() {
-  // ============================================================
-  // 空骨架（ST 拿不到数据时使用，避免渲染崩溃）
-  // ============================================================
   const EMPTY_DATA = {
     世界: { 纪元: '—', 天气: '—', 时间: { 时: 0, 分: 0 }, 已进入位面时间: 0, 休息剩余天数: 0, 当前位面: '高塔' },
     历史: { 已完成位面: {}, 称号: {} },
@@ -879,9 +894,7 @@ body {
     return pad2(toNum(t.时, 0)) + ':' + pad2(toNum(t.分, 0));
   }
 
-  // ============================================================
-  // 头像管理（localStorage）
-  // ============================================================
+  // ===== 头像管理 =====
   const AVATAR_PREFIX = 'tower_avatar_';
   function getAvatar(name) {
     try { return localStorage.getItem(AVATAR_PREFIX + name) || ''; } catch(e) { return ''; }
@@ -921,9 +934,7 @@ body {
     input.click();
   }
 
-  // ============================================================
-  // 世界条
-  // ============================================================
+  // ===== 世界条 =====
   function renderWorldbar() {
     const era    = getVar('世界.纪元', '—');
     const plane  = getVar('世界.当前位面', '高塔');
@@ -961,9 +972,7 @@ body {
     document.getElementById('worldbar').innerHTML = html;
   }
 
-  // ============================================================
-  // 观测者主卡
-  // ============================================================
+  // ===== 观测者主卡 =====
   function renderObserverCard() {
     const info = getVar('观测者信息', {});
     const name = info.姓名 || '观测者';
@@ -1012,9 +1021,7 @@ body {
     `;
   }
 
-  // ============================================================
-  // 观测者详情
-  // ============================================================
+  // ===== 观测者详情 =====
   function openObserverDetail() {
     renderObserverTab('equip');
     document.getElementById('mask-observer').classList.add('show');
@@ -1125,9 +1132,7 @@ body {
     }
   }
 
-  // ============================================================
-  // 角色列表
-  // ============================================================
+  // ===== 角色列表 =====
   function openCharList() {
     const body = document.getElementById('char-list-body');
     const entries = sortedEntries(getVar('角色', {}));
@@ -1175,9 +1180,7 @@ body {
     document.getElementById('mask-char-list').classList.add('show');
   }
 
-  // ============================================================
-  // 角色详情
-  // ============================================================
+  // ===== 角色详情 =====
   function openCharDetail(key) {
     const c = getVar('角色.' + key, {});
     if (!c) return;
@@ -1450,9 +1453,7 @@ body {
     }
   }
 
-  // ============================================================
-  // 任务
-  // ============================================================
+  // ===== 任务 =====
   function openTaskModal() {
     const body = document.getElementById('task-body');
     const main = getVar('任务.主线任务', {});
@@ -1505,9 +1506,7 @@ body {
     document.getElementById('mask-task').classList.add('show');
   }
 
-  // ============================================================
-  // 建筑
-  // ============================================================
+  // ===== 建筑 =====
   function openBuildingModal() {
     const body = document.getElementById('building-body');
     const entries = sortedEntries(getVar('建筑', {}));
@@ -1536,9 +1535,7 @@ body {
     document.getElementById('mask-building').classList.add('show');
   }
 
-  // ============================================================
-  // 历史
-  // ============================================================
+  // ===== 历史 =====
   function openHistoryModal() {
     const body = document.getElementById('history-body');
     const planes = getVar('历史.已完成位面', {});
@@ -1576,9 +1573,7 @@ body {
     document.getElementById('mask-history').classList.add('show');
   }
 
-  // ============================================================
-  // 事件
-  // ============================================================
+  // ===== 事件 =====
   function bindEvents() {
     document.getElementById('entry-observer').addEventListener('click', openObserverDetail);
     document.getElementById('entry-char').addEventListener('click', openCharList);
