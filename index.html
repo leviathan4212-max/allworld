@@ -230,7 +230,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* ===== 弹窗：mask 滚动，modal 自由高度 ===== */
 .mask {
   position: fixed; inset: 0;
   background: rgba(28,22,15,0.55);
@@ -246,7 +245,6 @@ body {
   border-radius: 8px; border: 1px solid var(--gold-dark);
   box-shadow: 0 0 0 1px var(--gold-light), var(--shadow-lg);
   width: 100%; max-width: 560px;
-  /* 不再限制 max-height，弹窗高度由内容决定 */
   display: flex; flex-direction: column; overflow: hidden; position: relative;
   margin: auto 0;
 }
@@ -280,10 +278,8 @@ body {
 }
 .modal-body {
   padding: 16px 20px;
-  /* 取消 flex / overflow，弹窗内容完整展开 */
 }
 
-/* mask 的滚动条样式 */
 .mask::-webkit-scrollbar { width: 8px; }
 .mask::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--gold-light), var(--gold));
@@ -291,7 +287,6 @@ body {
 }
 .mask::-webkit-scrollbar-track { background: rgba(40,30,15,0.2); }
 
-/* .scroll 类仍然保留给其他潜在用途 */
 .scroll::-webkit-scrollbar { width: 6px; }
 .scroll::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--gold-light), var(--gold));
@@ -1182,8 +1177,9 @@ body {
 
   // ===== 角色详情 =====
   function openCharDetail(key) {
-    const c = getVar('角色.' + key, {});
-    if (!c) return;
+    const allChars = getVar('角色', {});
+    const c = allChars[key] || {};
+    if (!c || !Object.keys(c).length) return;
     const n = c.普通 || {};
     const name = n.姓名 || key;
     const rank = n.品级 || '凡人';
@@ -1251,7 +1247,8 @@ body {
   }
 
   function renderCharTab(key, tab) {
-    const c = getVar('角色.' + key, {});
+    const allChars = getVar('角色', {});
+    const c = allChars[key] || {};
     const n = c.普通 || {};
     const nsfw = c.NSFW || {};
     const content = document.getElementById('char-tab-content');
