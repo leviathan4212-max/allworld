@@ -114,18 +114,18 @@ body {
 
 #main { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 
-.observer-card {
+.reincarnator-card {
   border-radius: 6px; padding: 16px 18px;
   border: 1px solid var(--gold-light);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), var(--shadow-sm);
   position: relative;
 }
-.observer-head {
+.reincarnator-head {
   display: flex; align-items: center; gap: 10px;
   padding-bottom: 12px; margin-bottom: 10px;
   border-bottom: 1px solid var(--line); position: relative;
 }
-.observer-head::after {
+.reincarnator-head::after {
   content: ''; position: absolute; bottom: -1px; left: 0;
   width: 40px; height: 1px; background: var(--gold);
 }
@@ -181,18 +181,18 @@ body {
   font-family: 'Georgia','Consolas',monospace; font-size: 17px; letter-spacing: 0.5px;
 }
 
-.observer-row {
+.reincarnator-row {
   display: flex; gap: 12px; padding: 6px 0; font-size: 12.5px;
   align-items: flex-start;
 }
-.observer-row + .observer-row { border-top: 1px solid rgba(216,207,190,0.4); }
-.observer-row .label {
+.reincarnator-row + .reincarnator-row { border-top: 1px solid rgba(216,207,190,0.4); }
+.reincarnator-row .label {
   color: var(--muted); flex-shrink: 0; width: 62px; font-size: 11px;
   letter-spacing: 1.5px; padding-top: 2px;
   font-family: 'Georgia',serif; text-transform: uppercase;
 }
-.observer-row .value { flex: 1; word-break: break-word; }
-.observer-row .value .currency {
+.reincarnator-row .value { flex: 1; word-break: break-word; }
+.reincarnator-row .value .currency {
   display: inline-flex; align-items: baseline; gap: 4px;
   padding: 2px 8px; border-radius: 2px;
   background: rgba(224,192,136,0.15);
@@ -200,7 +200,7 @@ body {
   font-family: 'Georgia','Noto Serif SC',serif;
   color: var(--gold-deep);
 }
-.observer-row .value .currency .num {
+.reincarnator-row .value .currency .num {
   font-weight: 700; font-size: 13px;
 }
 
@@ -866,9 +866,9 @@ body {
 <div id="tower-panel" class="marble">
   <div id="worldbar" class="marble-deep"></div>
   <div id="main">
-    <div class="observer-card marble" id="observer-card"></div>
+    <div class="reincarnator-card marble" id="reincarnator-card"></div>
     <div id="entries">
-      <div class="entry-btn" id="entry-observer"><span class="ico">✦</span>观测者</div>
+      <div class="entry-btn" id="entry-reincarnator"><span class="ico">✦</span>轮回者</div>
       <div class="entry-btn" id="entry-char"><span class="ico">◆</span>角色</div>
       <div class="entry-btn" id="entry-task"><span class="ico">✎</span>任务</div>
       <div class="entry-btn" id="entry-building"><span class="ico">⌂</span>高塔</div>
@@ -877,10 +877,10 @@ body {
   </div>
 </div>
 
-<div class="mask" id="mask-observer">
+<div class="mask" id="mask-reincarnator">
   <div class="modal marble">
-    <div class="modal-head">观测者终端 <button class="close-btn" data-close="mask-observer">✕</button></div>
-    <div class="modal-body" id="observer-detail"></div>
+    <div class="modal-head">轮回者终端 <button class="close-btn" data-close="mask-reincarnator">✕</button></div>
+    <div class="modal-body" id="reincarnator-detail"></div>
   </div>
 </div>
 <div class="mask" id="mask-char-list">
@@ -919,11 +919,11 @@ body {
   const EMPTY_DATA = {
     世界: { 纪元: '—', 天气: '—', 时间: { 时: 0, 分: 0 }, 已进入位面时间: 0, 休息剩余天数: 0, 当前位面: '高塔' },
     历史: { 已完成位面: {}, 称号: {} },
-    观测者信息: {
-      姓名: '观测者', 性别: '男',
+    轮回者信息: {
+      姓名: '轮回者', 性别: '男',
       永久品级: '凡人', 当前品级: '凡人',
       伤势状态: '无伤', 当前状态: '', 位面身份: '', 当前场景: '',
-      观测点: 0, 位面货币: { 单位: '', 数量: 0 },
+      轮回点: 0, 位面货币: { 单位: '', 数量: 0 },
       当前装备: {}, 永久技能: {}, 临时技能: {}, 持有物品: {}
     },
     角色: {},
@@ -1097,14 +1097,14 @@ body {
     document.getElementById('worldbar').innerHTML = html;
   }
 
-  // ===== 观测者主卡 =====
-  function renderObserverCard() {
-    const info = getVar('观测者信息', {});
-    const name = info.姓名 || '观测者';
+  // ===== 轮回者主卡 =====
+  function renderReincarnatorCard() {
+    const info = getVar('轮回者信息', {});
+    const name = info.姓名 || '轮回者';
     const rank = info.当前品级 || info.永久品级 || '凡人';
     const permRank = info.永久品级 || '凡人';
     const hurt = info.伤势状态 || '无伤';
-    const points = toNum(info.观测点, 0);
+    const points = toNum(info.轮回点, 0);
     const scene = info.当前场景 || '—';
     const status = info.当前状态 || '—';
     const planeId = info.位面身份 || '';
@@ -1118,7 +1118,7 @@ body {
 
     let currencyHtml = '';
     if (!inTower && currency.单位 && toNum(currency.数量, 0) > 0) {
-      currencyHtml = `<div class="observer-row">
+      currencyHtml = `<div class="reincarnator-row">
         <span class="label">货币</span>
         <span class="value">
           <span class="currency">
@@ -1129,45 +1129,45 @@ body {
       </div>`;
     }
 
-    document.getElementById('observer-card').innerHTML = `
-      <div class="observer-head">
+    document.getElementById('reincarnator-card').innerHTML = `
+      <div class="reincarnator-head">
         ${rankHtml}
         <span class="hurt-tag hurt-${esc(hurt)}">${esc(hurt)}</span>
         <div class="points-block">
-          <span class="label">观测点</span>
+          <span class="label">轮回点</span>
           <span class="value">${points.toLocaleString()}</span>
         </div>
       </div>
-      <div class="observer-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
-      ${!inTower && planeId ? `<div class="observer-row"><span class="label">身份</span><span class="value">${esc(planeId)}</span></div>` : ''}
-      <div class="observer-row"><span class="label">场景</span><span class="value">${esc(scene)}</span></div>
-      <div class="observer-row"><span class="label">状态</span><span class="value">${esc(status)}</span></div>
+      <div class="reincarnator-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
+      ${!inTower && planeId ? `<div class="reincarnator-row"><span class="label">身份</span><span class="value">${esc(planeId)}</span></div>` : ''}
+      <div class="reincarnator-row"><span class="label">场景</span><span class="value">${esc(scene)}</span></div>
+      <div class="reincarnator-row"><span class="label">状态</span><span class="value">${esc(status)}</span></div>
       ${currencyHtml}
     `;
   }
 
-  // ===== 观测者详情 =====
-  function openObserverDetail() {
-    renderObserverTab('equip');
-    document.getElementById('mask-observer').classList.add('show');
+  // ===== 轮回者详情 =====
+  function openReincarnatorDetail() {
+    renderReincarnatorTab('equip');
+    document.getElementById('mask-reincarnator').classList.add('show');
   }
 
-  function renderObserverTab(tab) {
-    const body = document.getElementById('observer-detail');
+  function renderReincarnatorTab(tab) {
+    const body = document.getElementById('reincarnator-detail');
     body.innerHTML = `
       <div class="tabs">
-        <div class="tab ${tab==='equip'?'active':''}" data-obs-tab="equip">装备</div>
-        <div class="tab ${tab==='skill'?'active':''}" data-obs-tab="skill">技能</div>
-        <div class="tab ${tab==='item'?'active':''}" data-obs-tab="item">物品</div>
+        <div class="tab ${tab==='equip'?'active':''}" data-reincarnator-tab="equip">装备</div>
+        <div class="tab ${tab==='skill'?'active':''}" data-reincarnator-tab="skill">技能</div>
+        <div class="tab ${tab==='item'?'active':''}" data-reincarnator-tab="item">物品</div>
       </div>
-      <div id="observer-tab-content"></div>
+      <div id="reincarnator-tab-content"></div>
     `;
-    body.querySelectorAll('[data-obs-tab]').forEach(el => {
-      el.addEventListener('click', () => renderObserverTab(el.dataset.obsTab));
+    body.querySelectorAll('[data-reincarnator-tab]').forEach(el => {
+      el.addEventListener('click', () => renderReincarnatorTab(el.dataset.reincarnatorTab));
     });
 
-    const content = document.getElementById('observer-tab-content');
-    const info = getVar('观测者信息', {});
+    const content = document.getElementById('reincarnator-tab-content');
+    const info = getVar('轮回者信息', {});
 
     if (tab === 'equip') {
       const equip = info.当前装备 || {};
@@ -1718,7 +1718,7 @@ body {
 
   // ===== 事件 =====
   function bindEvents() {
-    document.getElementById('entry-observer').addEventListener('click', openObserverDetail);
+    document.getElementById('entry-reincarnator').addEventListener('click', openReincarnatorDetail);
     document.getElementById('entry-char').addEventListener('click', openCharList);
     document.getElementById('entry-task').addEventListener('click', openTaskModal);
     document.getElementById('entry-building').addEventListener('click', openBuildingModal);
@@ -1744,7 +1744,7 @@ body {
 
   function updateUI() {
     renderWorldbar();
-    renderObserverCard();
+    renderReincarnatorCard();
   }
 
   function init() {
