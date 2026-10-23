@@ -927,7 +927,7 @@ body {
       当前装备: {}, 永久技能: {}, 临时技能: {}, 持有物品: {}
     },
     角色: {},
-    任务: { 主线任务: {}, 支线任务: {}, 奇遇任务: {} },
+    任务: { 核心目标: {}, 故事线: {}, 日常任务: {} },
     建筑: {}
   };
 
@@ -1599,51 +1599,61 @@ body {
   // ===== 任务 =====
   function openTaskModal() {
     const body = document.getElementById('task-body');
-    const main = getVar('任务.主线任务', {});
-    const side = getVar('任务.支线任务', {});
-    const odd  = getVar('任务.奇遇任务', {});
+    const core = getVar('任务.核心目标', {});
+    const storylines = getVar('任务.故事线', {});
+    const daily = getVar('任务.日常任务', {});
     let html = '';
-    if (main && main.名称) {
-      const done = main.状态 === '已完成';
-      html += `<div class="section-title">主线任务</div>
+
+    if (core && core.名称) {
+      const done = core.状态 === '已完成';
+      html += `<div class="section-title">核心目标</div>
         <div class="quest-card main ${done?'done':''}">
           <div class="quest-head">
-            <div class="quest-name">${esc(main.名称)}</div>
-            <span class="quest-badge ${done?'done':''}">${esc(main.状态||'进行中')}</span>
+            <div class="quest-name">${esc(core.名称)}</div>
+            <span class="quest-badge ${done?'done':''}">${esc(core.状态||'进行中')}</span>
           </div>
-          ${main.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(main.描述)}</span></div>`:''}
-          ${main.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(main.奖励)}</span></div>`:''}
+          ${core.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(core.描述)}</span></div>`:''}
+          ${core.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(core.奖励)}</span></div>`:''}
         </div>`;
     }
-    const sideEntries = sortedEntries(side);
-    if (sideEntries.length) {
-      html += `<div class="section-title" style="margin-top:16px;">支线任务</div>`;
-      sideEntries.forEach(([name, t]) => {
-        const done = t.状态 === '已完成';
-        html += `<div class="quest-card side ${done?'done':''}">
+
+    const slEntries = Object.entries(storylines || {}).filter(([_, tasks]) => tasks && Object.keys(tasks).length);
+    if (slEntries.length) {
+      html += `<div class="section-title" style="margin-top:16px;">故事线</div>`;
+      slEntries.forEach(([slName, tasks]) => {
+        const taskEntries = Object.entries(tasks || {}).sort((a, b) => {
+          const na = parseFloat(String(a[0]).split('.').pop()) || 0;
+          const nb = parseFloat(String(b[0]).split('.').pop()) || 0;
+          return na - nb;
+        });
+        taskEntries.forEach(([taskName, t]) => {
+          const done = t.状态 === '已完成';
+          html += `<div class="quest-card side ${done?'done':''}">
+            <div class="quest-head">
+              <div class="quest-name">${esc(taskName)}</div>
+              <span class="quest-badge ${done?'done':''}">${esc(t.状态||'进行中')}</span>
+            </div>
+            ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
+            ${t.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(t.奖励)}</span></div>`:''}
+          </div>`;
+        });
+      });
+    }
+
+    const dailyEntries = sortedEntries(daily || {});
+    if (dailyEntries.length) {
+      html += `<div class="section-title" style="margin-top:16px;">日常任务</div>`;
+      dailyEntries.forEach(([name, t]) => {
+        html += `<div class="quest-card odd">
           <div class="quest-head">
             <div class="quest-name">${esc(name)}</div>
-            <span class="quest-badge ${done?'done':''}">${esc(t.状态||'进行中')}</span>
           </div>
           ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
           ${t.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(t.奖励)}</span></div>`:''}
         </div>`;
       });
     }
-    const oddEntries = sortedEntries(odd);
-    if (oddEntries.length) {
-      html += `<div class="section-title" style="margin-top:16px;">奇遇任务</div>`;
-      oddEntries.forEach(([name, t]) => {
-        const done = t.状态 === '已完成';
-        html += `<div class="quest-card odd ${done?'done':''}">
-          <div class="quest-head">
-            <div class="quest-name">${esc(name)}</div>
-            <span class="quest-badge ${done?'done':''}">${esc(t.状态||'进行中')}</span>
-          </div>
-          ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
-        </div>`;
-      });
-    }
+
     if (!html) html = '<div class="empty-tip">暂无任务记录</div>';
     body.innerHTML = html;
     document.getElementById('mask-task').classList.add('show');
