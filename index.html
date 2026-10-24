@@ -463,6 +463,13 @@ body {
   border-bottom: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   display: flex; gap: 10px; align-items: flex-start;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.skill-card:hover {
+  border-color: var(--gold-light);
+  box-shadow: 0 4px 12px rgba(184,147,90,0.18);
+  transform: translateY(-1px);
 }
 .skill-card.temp {
   border-left-style: dashed; border-left-color: var(--gold-light);
@@ -473,13 +480,23 @@ body {
   font-weight: 700; font-size: 12.5px; margin-bottom: 4px;
   font-family: 'Georgia','Noto Serif SC',serif;
   color: var(--ink); letter-spacing: 0.5px;
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 .skill-lv {
   font-size: 10px; padding: 1px 7px; border-radius: 2px;
   background: var(--gold-deep); color: #fff;
   font-family: 'Georgia',monospace; font-weight: 700;
   letter-spacing: 1px;
+}
+.skill-type-tag {
+  font-size: 10px; padding: 1px 7px; border-radius: 2px;
+  background: rgba(224,192,136,0.2); color: var(--gold-dark);
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 1px;
+  border: 1px solid var(--gold-light);
+}
+.skill-type-tag.passive {
+  background: rgba(122,158,110,0.15); color: var(--q-精良);
+  border-color: rgba(107,155,92,0.4);
 }
 .skill-desc { font-size: 11px; color: var(--muted); line-height: 1.65; }
 .skill-src { font-size: 10.5px; color: var(--gold-dark); margin-top: 4px; font-style: italic; }
@@ -492,6 +509,15 @@ body {
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.item-card:hover {
+  border-top-color: var(--gold-light);
+  border-right-color: var(--gold-light);
+  border-bottom-color: var(--gold-light);
+  box-shadow: 0 4px 12px rgba(184,147,90,0.18);
+  transform: translateY(-1px);
 }
 .item-name {
   font-weight: 600; font-size: 12px;
@@ -511,6 +537,15 @@ body {
   font-family: 'Georgia',monospace; letter-spacing: 0.5px;
 }
 .item-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin-top: 3px; }
+
+.equip-clickable {
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+}
+.equip-clickable:hover {
+  background: rgba(224,192,136,0.15);
+}
 
 .quest-card {
   border-radius: 3px; padding: 12px 14px; margin-bottom: 10px;
@@ -684,12 +719,12 @@ body {
   opacity: 1;
 }
 
-/* ===== 技能详情弹窗 ===== */
-.skill-popover {
+/* ===== 详情弹窗 ===== */
+.info-popover {
   position: fixed;
   z-index: 2000;
-  max-width: 300px;
-  min-width: 180px;
+  max-width: 320px;
+  min-width: 200px;
   background: rgba(255, 250, 248, 0.98);
   border: 1px solid var(--gold-dark);
   border-radius: 6px;
@@ -705,7 +740,7 @@ body {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.skill-popover::before {
+.info-popover::before {
   content: '';
   position: absolute;
   top: -6px; left: 20px;
@@ -715,29 +750,103 @@ body {
   border-top: 1px solid var(--gold-dark);
   transform: rotate(45deg);
 }
-.skill-popover-head {
+.info-popover-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
   padding-bottom: 6px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   border-bottom: 1px solid var(--gold-light);
 }
-.skill-popover-name {
+.info-popover-title {
   font-family: 'Georgia','Noto Serif SC',serif;
   font-weight: 700;
   font-size: 13px;
   color: var(--gold-deep);
   letter-spacing: 0.5px;
   flex: 1;
-}
-.skill-popover-body {
-  color: var(--ink-2);
-  font-size: 11.5px;
-  line-height: 1.7;
+  min-width: 60px;
   word-break: break-word;
 }
-.skill-popover-src {
+.info-popover-badge {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 2px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  white-space: nowrap;
+}
+.info-popover-type {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 2px;
+  background: rgba(224,192,136,0.2);
+  color: var(--gold-dark);
+  border: 1px solid var(--gold-light);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.info-popover-type.passive {
+  background: rgba(122,158,110,0.15);
+  color: var(--q-精良);
+  border-color: rgba(107,155,92,0.4);
+}
+.info-popover-row {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+.info-popover-row .k {
+  color: var(--muted);
+  font-family: 'Georgia',serif;
+  letter-spacing: 1px;
+  font-size: 10.5px;
+  margin-right: 6px;
+}
+.info-popover-effects {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.info-popover-effects-title {
+  font-size: 10.5px;
+  color: var(--gold-dark);
+  letter-spacing: 1.5px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.info-popover-effect-item {
+  font-size: 11px;
+  line-height: 1.7;
+  margin-bottom: 4px;
+  padding-left: 10px;
+  position: relative;
+  word-break: break-word;
+}
+.info-popover-effect-item::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 700;
+}
+.info-popover-effect-item .eff-name {
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-right: 5px;
+}
+.info-popover-effect-item .eff-desc {
+  color: var(--ink-2);
+}
+.info-popover-footer {
   margin-top: 8px;
   padding-top: 6px;
   border-top: 1px dashed var(--line);
@@ -1012,25 +1121,21 @@ body {
     input.click();
   }
 
-  // ===== 技能详情弹窗 =====
-  function hideSkillPopover() {
-    const pop = document.getElementById('skill-popover');
+  // ===== 通用详情弹窗 =====
+  let _popoverAnchor = null;
+
+  function hideInfoPopover() {
+    const pop = document.getElementById('info-popover');
     if (pop) pop.remove();
+    _popoverAnchor = null;
   }
-  function showSkillPopover(anchor, name, level, desc, source) {
-    hideSkillPopover();
+
+  function showInfoPopover(anchor, html) {
+    hideInfoPopover();
     const pop = document.createElement('div');
-    pop.id = 'skill-popover';
-    pop.className = 'skill-popover';
-    pop.dataset.anchorIdx = anchor.dataset.skillIdx;
-    pop.innerHTML = `
-      <div class="skill-popover-head">
-        <span class="skill-popover-name">${esc(name)}</span>
-        <span class="skill-lv">Lv.${toNum(level, 1)}</span>
-      </div>
-      <div class="skill-popover-body">${esc(desc || '暂无描述')}</div>
-      ${source ? `<div class="skill-popover-src">来源 · ${esc(source)}</div>` : ''}
-    `;
+    pop.id = 'info-popover';
+    pop.className = 'info-popover';
+    pop.innerHTML = html;
     document.body.appendChild(pop);
 
     const rect = anchor.getBoundingClientRect();
@@ -1046,18 +1151,93 @@ body {
     }
     pop.style.left = left + 'px';
     pop.style.top = top + 'px';
+    _popoverAnchor = anchor;
   }
 
-  // 全局监听关闭
+  function toggleInfoPopover(anchor, html) {
+    if (_popoverAnchor === anchor) {
+      hideInfoPopover();
+      return;
+    }
+    showInfoPopover(anchor, html);
+  }
+
   document.addEventListener('click', e => {
-    if (e.target.closest('.skill-tag-clickable') || e.target.closest('#skill-popover')) return;
-    hideSkillPopover();
+    if (e.target.closest('.item-card') || e.target.closest('.skill-card') ||
+        e.target.closest('.skill-tag-clickable') || e.target.closest('.equip-clickable') ||
+        e.target.closest('#info-popover')) return;
+    hideInfoPopover();
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') hideSkillPopover();
+    if (e.key === 'Escape') hideInfoPopover();
   });
-  window.addEventListener('resize', hideSkillPopover);
-  document.addEventListener('scroll', hideSkillPopover, true);
+  window.addEventListener('resize', hideInfoPopover);
+  document.addEventListener('scroll', hideInfoPopover, true);
+
+  // ===== 详情 HTML 构造 =====
+  function buildEffectsHtml(effects) {
+    const entries = Object.entries(effects || {});
+    if (!entries.length) return '';
+    let html = '<div class="info-popover-effects"><div class="info-popover-effects-title">效果</div>';
+    entries.forEach(([name, desc]) => {
+      html += `<div class="info-popover-effect-item"><span class="eff-name">${esc(name)}</span><span class="eff-desc">${esc(desc)}</span></div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function buildItemPopoverHtml(item, opts) {
+    opts = opts || {};
+    const name = item.名称 || opts.fallbackName || '—';
+    const quality = item.品质 || '普通';
+    const type = item.类型 || opts.fallbackType || '';
+    const qty = toNum(item.数量, 1);
+    const desc = item.介绍 || '';
+    const effects = item.效果 || {};
+    const slot = opts.slot || '';
+
+    let head = `<div class="info-popover-head"><span class="info-popover-title">${esc(name)}</span>`;
+    head += `<span class="info-popover-badge q-${esc(quality)}" style="background:var(--q-${esc(quality)});">${esc(quality)}</span>`;
+    if (slot) head += `<span class="info-popover-type">${esc(slot)}</span>`;
+    else if (type) head += `<span class="info-popover-type">${esc(type)}</span>`;
+    head += '</div>';
+
+    let body = '';
+    if (qty > 1) {
+      body += `<div class="info-popover-row"><span class="k">数量</span>×${qty}</div>`;
+    }
+    if (desc) {
+      body += `<div class="info-popover-row">${esc(desc)}</div>`;
+    }
+    body += buildEffectsHtml(effects);
+
+    return head + body;
+  }
+
+  function buildSkillPopoverHtml(skill, opts) {
+    opts = opts || {};
+    const name = opts.fallbackName || '—';
+    const level = toNum(skill.等级, 1);
+    const type = skill.类型 || '主动';
+    const desc = skill.描述 || '';
+    const effects = skill.效果 || {};
+    const src = skill.来源 || '';
+
+    let head = `<div class="info-popover-head"><span class="info-popover-title">${esc(name)}</span>`;
+    head += `<span class="info-popover-badge" style="background:var(--gold-deep);">Lv.${level}</span>`;
+    head += `<span class="info-popover-type ${type === '被动' ? 'passive' : ''}">${esc(type)}</span>`;
+    head += '</div>';
+
+    let body = '';
+    if (desc) {
+      body += `<div class="info-popover-row">${esc(desc)}</div>`;
+    }
+    body += buildEffectsHtml(effects);
+    if (src) {
+      body += `<div class="info-popover-footer">来源 · ${esc(src)}</div>`;
+    }
+    return head + body;
+  }
 
   // ===== 世界条 =====
   function renderWorldbar() {
@@ -1180,7 +1360,7 @@ body {
       entries.forEach(([slot, item]) => {
         const name = (item && item.名称) || '—';
         const quality = (item && item.品质) || '普通';
-        html += `<div class="item-card q-${esc(quality)}">
+        html += `<div class="item-card q-${esc(quality)}" data-equip-slot="${esc(slot)}">
           <div class="item-name">
             <span class="item-slot-tag">${esc(slot)}</span>
             ${esc(name)}
@@ -1189,6 +1369,14 @@ body {
         </div>`;
       });
       content.innerHTML = html;
+      content.querySelectorAll('[data-equip-slot]').forEach(el => {
+        const slot = el.dataset.equipSlot;
+        const item = equip[slot] || {};
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleInfoPopover(el, buildItemPopoverHtml(item, { slot, fallbackName: '—' }));
+        });
+      });
 
     } else if (tab === 'skill') {
       const perm = info.永久技能 || {};
@@ -1198,9 +1386,11 @@ body {
       if (permEntries.length) {
         html += `<div class="section-title">永久技能</div>`;
         permEntries.forEach(([name, s]) => {
-          html += `<div class="skill-card">
+          const type = s.类型 || '主动';
+          const typeCls = type === '被动' ? 'passive' : '';
+          html += `<div class="skill-card" data-skill-scope="perm" data-skill-name="${esc(name)}">
             <div class="skill-body">
-              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span></div>
+              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span><span class="skill-type-tag ${typeCls}">${esc(type)}</span></div>
               <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
               ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
             </div>
@@ -1211,9 +1401,11 @@ body {
       if (tempEntries.length) {
         html += `<div class="section-title" style="margin-top:16px;">临时技能</div>`;
         tempEntries.forEach(([name, s]) => {
-          html += `<div class="skill-card temp">
+          const type = s.类型 || '主动';
+          const typeCls = type === '被动' ? 'passive' : '';
+          html += `<div class="skill-card temp" data-skill-scope="temp" data-skill-name="${esc(name)}">
             <div class="skill-body">
-              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span></div>
+              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span><span class="skill-type-tag ${typeCls}">${esc(type)}</span></div>
               <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
               ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
             </div>
@@ -1222,6 +1414,16 @@ body {
       }
       if (!html) html = '<div class="empty-tip">尚未掌握任何技能</div>';
       content.innerHTML = html;
+      content.querySelectorAll('[data-skill-scope]').forEach(el => {
+        const scope = el.dataset.skillScope;
+        const name = el.dataset.skillName;
+        const src = scope === 'temp' ? temp : perm;
+        const skill = src[name] || {};
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleInfoPopover(el, buildSkillPopoverHtml(skill, { fallbackName: name }));
+        });
+      });
 
     } else {
       const items = info.持有物品 || {};
@@ -1243,7 +1445,7 @@ body {
         const list = groups[type].slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0));
         html += `<div class="section-group"><div class="section-title">${esc(type)} · ${list.length}</div>`;
         list.forEach(([name, item]) => {
-          html += `<div class="item-card q-${esc(item.品质||'普通')}">
+          html += `<div class="item-card q-${esc(item.品质||'普通')}" data-item-name="${esc(name)}">
             <div class="item-name">
               ${esc(item.名称||name)}
               ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
@@ -1254,6 +1456,14 @@ body {
         html += `</div>`;
       });
       content.innerHTML = html;
+      content.querySelectorAll('[data-item-name]').forEach(el => {
+        const name = el.dataset.itemName;
+        const item = items[name] || {};
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleInfoPopover(el, buildItemPopoverHtml(item, { fallbackName: name }));
+        });
+      });
     }
   }
 
@@ -1399,8 +1609,8 @@ body {
         </div>
         <div class="block">
           <div class="block-title">随身装备</div>
-          <div class="kv-row"><span class="k">武器</span><span class="v q-${esc(weapon.品质||'普通')}" style="padding-left:8px;border-left:2px solid;">${esc(weapon.名称||'空')}</span></div>
-          <div class="kv-row"><span class="k">衣物</span><span class="v q-${esc(cloth.品质||'普通')}" style="padding-left:8px;border-left:2px solid;">${esc(cloth.名称||'空')}</span></div>
+          <div class="kv-row"><span class="k">武器</span><span class="v q-${esc(weapon.品质||'普通')} equip-clickable" data-char-equip="武器" style="padding-left:8px;border-left:2px solid;">${esc(weapon.名称||'空')}</span></div>
+          <div class="kv-row"><span class="k">衣物</span><span class="v q-${esc(cloth.品质||'普通')} equip-clickable" data-char-equip="衣物" style="padding-left:8px;border-left:2px solid;">${esc(cloth.名称||'空')}</span></div>
         </div>
         <div class="block">
           <div class="block-title">身份标签</div>
@@ -1409,6 +1619,16 @@ body {
           ).join('') || '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>'}
         </div>
       `;
+
+      content.querySelectorAll('[data-char-equip]').forEach(el => {
+        const slot = el.dataset.charEquip;
+        const item = equip[slot] || {};
+        if (!item.名称) return;
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleInfoPopover(el, buildItemPopoverHtml(item, { slot, fallbackName: '—' }));
+        });
+      });
 
     } else if (tab === 'profile') {
       const b = n.身体信息 || {};
@@ -1451,19 +1671,12 @@ body {
         </div>
       `;
 
-      // 绑定技能点击事件
       content.querySelectorAll('[data-skill-idx]').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
           const idx = Number(el.dataset.skillIdx);
           const [sname, s] = skillList[idx];
-          const currentPop = document.getElementById('skill-popover');
-          const sameAnchor = currentPop && currentPop.dataset.anchorIdx === el.dataset.skillIdx;
-          if (sameAnchor) {
-            hideSkillPopover();
-            return;
-          }
-          showSkillPopover(el, sname, s.等级, s.描述, s.来源);
+          toggleInfoPopover(el, buildSkillPopoverHtml(s, { fallbackName: sname }));
         });
       });
 
@@ -1745,7 +1958,7 @@ body {
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        hideSkillPopover();
+        hideInfoPopover();
         const openMasks = Array.from(document.querySelectorAll('.mask.show'));
         if (openMasks.length) openMasks[openMasks.length - 1].classList.remove('show');
       }
