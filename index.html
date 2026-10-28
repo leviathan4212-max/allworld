@@ -35,10 +35,10 @@
   --q-史诗: #7c5cc4;
   --q-传说: #c9945a;
   --q-神话: #b85d5d;
-  --hurt-无伤: #6b9b5c;
-  --hurt-轻伤: #c9a055;
-  --hurt-重伤: #c97845;
-  --hurt-濒死: #b85d5d;
+  --res-hp: #b85d5d;
+  --res-mp: #4a7a9b;
+  --res-sp: #6b9b5c;
+  --res-san: #8a6da5;
 }
 .marble {
   background-color: var(--marble-base);
@@ -124,6 +124,7 @@ body {
   display: flex; align-items: center; gap: 10px;
   padding-bottom: 12px; margin-bottom: 10px;
   border-bottom: 1px solid var(--line); position: relative;
+  flex-wrap: wrap;
 }
 .reincarnator-head::after {
   content: ''; position: absolute; bottom: -1px; left: 0;
@@ -154,22 +155,35 @@ body {
   font-family: 'Georgia','Noto Serif SC',serif; vertical-align: middle;
   margin-left: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
-.rank-temp {
-  display: inline-block; padding: 2px 8px; border-radius: 2px;
-  font-size: 10px; color: var(--gold-deep); letter-spacing: 1px;
-  border: 1px dashed var(--gold); margin-left: 6px;
+
+.lv-artistic {
   font-family: 'Georgia','Noto Serif SC',serif;
+  font-size: 28px; font-weight: 700; line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--gold-dark);
+  text-shadow: 0 0 4px rgba(184,147,90,0.35);
+  letter-spacing: 1px;
+  display: inline-flex; align-items: flex-start;
+}
+.lv-artistic .prefix {
+  font-size: 10px; -webkit-text-stroke: 0;
+  color: var(--muted); vertical-align: super;
+  margin-right: 2px; font-weight: 400;
+  margin-top: 2px;
 }
 
-.hurt-tag {
-  padding: 3px 10px; border-radius: 2px; font-size: 11px;
-  color: #fff; font-weight: 600; letter-spacing: 0.5px;
+.armor-small {
+  font-size: 10px; color: var(--muted);
+  padding: 2px 8px; border-radius: 2px;
+  background: rgba(216,207,190,0.4);
+  border: 1px solid var(--line);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 1px;
 }
-.hurt-无伤 { background: var(--hurt-无伤); }
-.hurt-轻伤 { background: var(--hurt-轻伤); }
-.hurt-重伤 { background: var(--hurt-重伤); }
-.hurt-濒死 { background: var(--hurt-濒死); animation: pulse 1.4s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.55;} }
+.armor-small .num {
+  color: var(--gold-deep); font-weight: 700;
+  font-family: 'Georgia',monospace; margin-left: 3px;
+}
 
 .points-block { margin-left: auto; display: flex; align-items: baseline; gap: 6px; }
 .points-block .label {
@@ -200,9 +214,7 @@ body {
   font-family: 'Georgia','Noto Serif SC',serif;
   color: var(--gold-deep);
 }
-.reincarnator-row .value .currency .num {
-  font-weight: 700; font-size: 13px;
-}
+.reincarnator-row .value .currency .num { font-weight: 700; font-size: 13px; }
 
 #entries { display: flex; gap: 8px; }
 .entry-btn {
@@ -276,9 +288,7 @@ body {
   border-color: var(--gold); color: var(--gold-deep);
   background: rgba(224,192,136,0.12);
 }
-.modal-body {
-  padding: 16px 20px;
-}
+.modal-body { padding: 16px 20px; }
 
 .mask::-webkit-scrollbar { width: 8px; }
 .mask::-webkit-scrollbar-thumb {
@@ -287,14 +297,7 @@ body {
 }
 .mask::-webkit-scrollbar-track { background: rgba(40,30,15,0.2); }
 
-.scroll::-webkit-scrollbar { width: 6px; }
-.scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--gold-light), var(--gold));
-  border-radius: 3px;
-}
-.scroll::-webkit-scrollbar-track { background: rgba(216,207,190,0.3); }
-
-.tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .tab {
   padding: 8px 16px; font-size: 12px; cursor: pointer; color: var(--muted);
   letter-spacing: 1.5px; transition: all 0.15s; position: relative;
@@ -405,10 +408,32 @@ body {
 .bar-fill { height: 100%; transition: width 0.4s ease; }
 .fill-fav { background: linear-gradient(90deg, #e8b8c5, #b85d7d); }
 .fill-cor { background: linear-gradient(90deg, #c9b8c9, #7c5cc4); }
-.fill-dev { background: linear-gradient(90deg, #e8c9a8, #b8895a); }
 .bar-num {
   width: 32px; text-align: right; font-weight: 700; font-size: 11px;
   color: var(--gold-deep); font-family: 'Georgia',monospace;
+}
+
+.res-bar-row {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 6px; font-size: 10.5px;
+}
+.res-bar-row .lbl {
+  width: 32px; color: var(--muted); flex-shrink: 0;
+  letter-spacing: 1px; font-family: 'Georgia',serif; font-weight: 700;
+}
+.res-bar-track {
+  flex: 1; height: 7px; background: rgba(216,207,190,0.4);
+  border: 1px solid var(--line); overflow: hidden; position: relative;
+}
+.res-bar-fill { height: 100%; transition: width 0.4s ease; }
+.fill-hp  { background: linear-gradient(90deg, #e8a0a0, var(--res-hp)); }
+.fill-mp  { background: linear-gradient(90deg, #a0b8d8, var(--res-mp)); }
+.fill-sp  { background: linear-gradient(90deg, #a8c89c, var(--res-sp)); }
+.fill-san { background: linear-gradient(90deg, #b8a0d0, var(--res-san)); }
+.res-bar-num {
+  width: 78px; text-align: right; font-weight: 700;
+  font-size: 10.5px; color: var(--gold-deep);
+  font-family: 'Georgia',monospace;
 }
 
 .block { margin-bottom: 14px; }
@@ -482,12 +507,6 @@ body {
   color: var(--ink); letter-spacing: 0.5px;
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
-.skill-lv {
-  font-size: 10px; padding: 1px 7px; border-radius: 2px;
-  background: var(--gold-deep); color: #fff;
-  font-family: 'Georgia',monospace; font-weight: 700;
-  letter-spacing: 1px;
-}
 .skill-type-tag {
   font-size: 10px; padding: 1px 7px; border-radius: 2px;
   background: rgba(224,192,136,0.2); color: var(--gold-dark);
@@ -498,8 +517,21 @@ body {
   background: rgba(122,158,110,0.15); color: var(--q-精良);
   border-color: rgba(107,155,92,0.4);
 }
+.skill-quality-tag {
+  font-size: 10px; padding: 1px 7px; border-radius: 2px;
+  color: #fff; font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 1px; font-weight: 700;
+}
 .skill-desc { font-size: 11px; color: var(--muted); line-height: 1.65; }
-.skill-src { font-size: 10.5px; color: var(--gold-dark); margin-top: 4px; font-style: italic; }
+.skill-meta-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  font-size: 10.5px; color: var(--muted); margin-top: 4px;
+}
+.skill-meta-row .kv {
+  padding: 1px 7px; border-radius: 2px;
+  background: rgba(216,207,190,0.25);
+  border: 1px solid rgba(216,207,190,0.5);
+}
 
 .item-card {
   background: rgba(255,255,255,0.65); border-radius: 3px;
@@ -543,9 +575,7 @@ body {
   transition: all 0.15s ease;
   border-radius: 2px;
 }
-.equip-clickable:hover {
-  background: rgba(224,192,136,0.15);
-}
+.equip-clickable:hover { background: rgba(224,192,136,0.15); }
 
 .quest-card {
   border-radius: 3px; padding: 12px 14px; margin-bottom: 10px;
@@ -657,29 +687,6 @@ body {
   width: 30px; height: 2px; background: var(--gold);
 }
 
-.clothes-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-}
-.clothes-cell {
-  background: rgba(255,255,255,0.55); border-radius: 3px;
-  padding: 9px 11px; font-size: 11px;
-  border: 1px solid var(--line); border-left: 3px solid var(--gold-light);
-}
-.clothes-cell .slot {
-  color: var(--gold-dark); font-weight: 700; font-size: 10.5px;
-  margin-bottom: 4px; letter-spacing: 1.5px;
-  font-family: 'Georgia','Noto Serif SC',serif; text-transform: uppercase;
-}
-.clothes-item { font-size: 11px; line-height: 1.65; color: var(--ink-2); }
-.clothes-item .state {
-  font-size: 10px; padding: 1px 6px; border-radius: 2px;
-  margin-left: 4px; letter-spacing: 0.5px;
-}
-.st-normal { background: rgba(107,155,92,0.18); color: var(--q-精良); }
-.st-mess   { background: rgba(201,160,85,0.22); color: #8a6d20; }
-.st-damage { background: rgba(201,120,69,0.22); color: #8a4a20; }
-.st-off    { background: rgba(184,93,93,0.2); color: var(--q-神话); }
-
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .skill-tag {
   font-size: 11px; padding: 3px 11px; border-radius: 2px;
@@ -689,18 +696,12 @@ body {
   font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 0.5px;
   display: inline-flex; align-items: baseline; gap: 5px;
 }
-.skill-tag .lv {
-  font-size: 9px; color: var(--gold-dark);
-  font-family: 'Georgia',monospace; font-weight: 700;
-}
 .skill-tag.empty {
   background: transparent; border: 1px dashed var(--line-2);
   color: var(--muted-2); font-weight: 400; font-style: italic;
 }
 .skill-tag-clickable {
-  cursor: pointer;
-  position: relative;
-  transition: all 0.15s ease;
+  cursor: pointer; position: relative; transition: all 0.15s ease;
 }
 .skill-tag-clickable:hover {
   background: linear-gradient(135deg, #f5ecd8, #e8d9b8);
@@ -708,32 +709,14 @@ body {
   box-shadow: 0 2px 6px rgba(184,147,90,0.25);
   transform: translateY(-1px);
 }
-.skill-tag-clickable::after {
-  content: 'ⓘ';
-  font-size: 9px;
-  opacity: 0.5;
-  margin-left: 2px;
-  font-family: 'Georgia', serif;
-}
-.skill-tag-clickable:hover::after {
-  opacity: 1;
-}
 
-/* ===== 详情弹窗 ===== */
 .info-popover {
-  position: fixed;
-  z-index: 2000;
-  max-width: 320px;
-  min-width: 200px;
+  position: fixed; z-index: 2000; max-width: 320px; min-width: 200px;
   background: rgba(255, 250, 248, 0.98);
-  border: 1px solid var(--gold-dark);
-  border-radius: 6px;
+  border: 1px solid var(--gold-dark); border-radius: 6px;
   box-shadow: 0 0 0 1px var(--gold-light), 0 8px 24px rgba(40,30,15,0.3);
-  padding: 12px 14px;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--ink);
-  animation: popFadeIn 0.15s ease;
+  padding: 12px 14px; font-size: 12px; line-height: 1.6;
+  color: var(--ink); animation: popFadeIn 0.15s ease;
   backdrop-filter: blur(8px);
 }
 @keyframes popFadeIn {
@@ -741,119 +724,65 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .info-popover::before {
-  content: '';
-  position: absolute;
-  top: -6px; left: 20px;
-  width: 10px; height: 10px;
-  background: rgba(255, 250, 248, 0.98);
-  border-left: 1px solid var(--gold-dark);
-  border-top: 1px solid var(--gold-dark);
+  content: ''; position: absolute; top: -6px; left: 20px;
+  width: 10px; height: 10px; background: rgba(255, 250, 248, 0.98);
+  border-left: 1px solid var(--gold-dark); border-top: 1px solid var(--gold-dark);
   transform: rotate(45deg);
 }
 .info-popover-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  padding-bottom: 6px;
-  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding-bottom: 6px; margin-bottom: 8px;
   border-bottom: 1px solid var(--gold-light);
 }
 .info-popover-title {
-  font-family: 'Georgia','Noto Serif SC',serif;
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--gold-deep);
-  letter-spacing: 0.5px;
-  flex: 1;
-  min-width: 60px;
-  word-break: break-word;
+  font-family: 'Georgia','Noto Serif SC',serif; font-weight: 700;
+  font-size: 13px; color: var(--gold-deep); letter-spacing: 0.5px;
+  flex: 1; min-width: 60px; word-break: break-word;
 }
 .info-popover-badge {
-  font-size: 10px;
-  padding: 1px 7px;
-  border-radius: 2px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #fff;
+  font-size: 10px; padding: 1px 7px; border-radius: 2px;
+  font-weight: 700; letter-spacing: 0.5px; color: #fff;
   font-family: 'Georgia','Noto Serif SC',serif;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
-  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15); white-space: nowrap;
 }
 .info-popover-type {
-  font-size: 10px;
-  padding: 1px 7px;
-  border-radius: 2px;
-  background: rgba(224,192,136,0.2);
-  color: var(--gold-dark);
+  font-size: 10px; padding: 1px 7px; border-radius: 2px;
+  background: rgba(224,192,136,0.2); color: var(--gold-dark);
   border: 1px solid var(--gold-light);
   font-family: 'Georgia','Noto Serif SC',serif;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+  letter-spacing: 0.5px; white-space: nowrap;
 }
 .info-popover-type.passive {
-  background: rgba(122,158,110,0.15);
-  color: var(--q-精良);
+  background: rgba(122,158,110,0.15); color: var(--q-精良);
   border-color: rgba(107,155,92,0.4);
 }
 .info-popover-row {
-  font-size: 11.5px;
-  line-height: 1.7;
-  color: var(--ink-2);
-  margin-bottom: 6px;
-  word-break: break-word;
+  font-size: 11.5px; line-height: 1.7; color: var(--ink-2);
+  margin-bottom: 6px; word-break: break-word;
 }
 .info-popover-row .k {
-  color: var(--muted);
-  font-family: 'Georgia',serif;
-  letter-spacing: 1px;
-  font-size: 10.5px;
-  margin-right: 6px;
+  color: var(--muted); font-family: 'Georgia',serif;
+  letter-spacing: 1px; font-size: 10.5px; margin-right: 6px;
 }
 .info-popover-effects {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--line);
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line);
 }
 .info-popover-effects-title {
-  font-size: 10.5px;
-  color: var(--gold-dark);
-  letter-spacing: 1.5px;
-  font-family: 'Georgia','Noto Serif SC',serif;
-  margin-bottom: 5px;
-  font-weight: 700;
+  font-size: 10.5px; color: var(--gold-dark); letter-spacing: 1.5px;
+  font-family: 'Georgia','Noto Serif SC',serif; margin-bottom: 5px; font-weight: 700;
 }
 .info-popover-effect-item {
-  font-size: 11px;
-  line-height: 1.7;
-  margin-bottom: 4px;
-  padding-left: 10px;
-  position: relative;
-  word-break: break-word;
+  font-size: 11px; line-height: 1.7; margin-bottom: 4px;
+  padding-left: 10px; position: relative; word-break: break-word;
 }
 .info-popover-effect-item::before {
-  content: '·';
-  position: absolute;
-  left: 0;
-  color: var(--gold);
-  font-weight: 700;
+  content: '·'; position: absolute; left: 0;
+  color: var(--gold); font-weight: 700;
 }
 .info-popover-effect-item .eff-name {
-  color: var(--gold-dark);
-  font-weight: 700;
-  margin-right: 5px;
+  color: var(--gold-dark); font-weight: 700; margin-right: 5px;
 }
-.info-popover-effect-item .eff-desc {
-  color: var(--ink-2);
-}
-.info-popover-footer {
-  margin-top: 8px;
-  padding-top: 6px;
-  border-top: 1px dashed var(--line);
-  font-size: 10.5px;
-  color: var(--gold-dark);
-  font-style: italic;
-}
+.info-popover-effect-item .eff-desc { color: var(--ink-2); }
 
 .part-row {
   display: flex; gap: 10px; padding: 6px 0;
@@ -862,18 +791,15 @@ body {
 }
 .part-row:last-child { border-bottom: none; }
 .part-row .part-name {
-  color: var(--gold-dark); font-weight: 700;
-  flex-shrink: 0; min-width: 42px;
-  font-family: 'Georgia','Noto Serif SC',serif;
-  letter-spacing: 1px;
+  color: var(--gold-dark); font-weight: 700; flex-shrink: 0; min-width: 42px;
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 1px;
 }
 .part-row .part-body { flex: 1; }
 .part-row .part-appear {
   color: var(--muted); font-size: 11px; line-height: 1.5;
 }
 .part-row .part-status {
-  color: var(--ink); font-size: 11.5px; line-height: 1.5;
-  margin-top: 2px;
+  color: var(--ink); font-size: 11.5px; line-height: 1.5; margin-top: 2px;
 }
 
 .dev-row {
@@ -885,19 +811,16 @@ body {
   border-bottom: 1px solid var(--line);
 }
 .dev-head {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
 }
 .dev-name {
   font-weight: 700; font-size: 12px;
-  font-family: 'Georgia','Noto Serif SC',serif;
-  color: var(--ink);
+  font-family: 'Georgia','Noto Serif SC',serif; color: var(--ink);
 }
 .dev-lv {
   font-size: 10px; padding: 1px 8px; border-radius: 2px;
   background: var(--gold-deep); color: #fff;
-  font-family: 'Georgia',monospace; font-weight: 700;
-  letter-spacing: 1px;
+  font-family: 'Georgia',monospace; font-weight: 700; letter-spacing: 1px;
 }
 .dev-lv.max { background: var(--q-神话); }
 .dev-body { font-size: 11px; color: var(--muted); line-height: 1.55; }
@@ -920,29 +843,23 @@ body {
   font-weight: 700; font-size: 12px;
   font-family: 'Georgia','Noto Serif SC',serif;
 }
-.fetish-desc {
-  font-size: 11px; color: var(--muted); line-height: 1.6;
-  margin-bottom: 6px;
-}
+.fetish-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 6px; }
 .fetish-dev-bar {
   display: flex; align-items: center; gap: 8px; font-size: 10.5px;
 }
 .fetish-dev-bar .label {
-  color: var(--muted); letter-spacing: 1px;
-  font-family: 'Georgia',serif;
+  color: var(--muted); letter-spacing: 1px; font-family: 'Georgia',serif;
 }
 .fetish-dev-bar .track {
   flex: 1; height: 5px; background: rgba(216,207,190,0.5);
   border: 1px solid var(--line);
 }
 .fetish-dev-bar .fill {
-  height: 100%;
-  background: linear-gradient(90deg, #e8c9a8, #b8895a);
+  height: 100%; background: linear-gradient(90deg, #e8c9a8, #b8895a);
 }
 .fetish-dev-bar .num {
   font-weight: 700; color: var(--gold-deep);
-  font-family: 'Georgia',monospace;
-  min-width: 26px; text-align: right;
+  font-family: 'Georgia',monospace; min-width: 26px; text-align: right;
 }
 
 .period-grid {
@@ -955,23 +872,116 @@ body {
 }
 .period-item .k { color: var(--muted); }
 .period-item .v {
-  color: var(--ink); font-weight: 600;
-  font-family: 'Georgia',monospace;
+  color: var(--ink); font-weight: 600; font-family: 'Georgia',monospace;
 }
 .period-phase {
   display: inline-block; padding: 3px 10px; border-radius: 2px;
-  font-size: 11px; font-weight: 700;
-  color: #fff; letter-spacing: 1px;
-  font-family: 'Georgia','Noto Serif SC',serif;
-  margin-bottom: 8px;
+  font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 1px;
+  font-family: 'Georgia','Noto Serif SC',serif; margin-bottom: 8px;
 }
 .phase-经期   { background: #b85d5d; }
 .phase-卵泡期 { background: #7a9e6e; }
 .phase-排卵期 { background: #c9945a; }
 .phase-黄体期 { background: #8a6da5; }
+
+.level-layout {
+  display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;
+}
+.radar-wrap {
+  flex: 0 0 200px; width: 200px;
+}
+.radar-svg { width: 100%; display: block; }
+.attr-list {
+  flex: 1; min-width: 180px;
+}
+.attr-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; font-size: 11.5px;
+  border-bottom: 1px dashed rgba(216,207,190,0.45);
+}
+.attr-row:last-child { border-bottom: none; }
+.attr-row .name {
+  flex-shrink: 0; width: 48px; color: var(--muted);
+  font-family: 'Georgia','Noto Serif SC',serif; letter-spacing: 1px;
+}
+.attr-row .num {
+  flex-shrink: 0; width: 56px; text-align: right;
+  font-family: 'Georgia',monospace; font-weight: 700;
+  color: var(--gold-deep); font-size: 12px;
+}
+.attr-row .max {
+  flex-shrink: 0; width: 40px; text-align: right;
+  font-family: 'Georgia',monospace; font-size: 10px; color: var(--muted);
+}
+.attr-row .attr-track {
+  flex: 1; height: 5px; background: rgba(216,207,190,0.5);
+  border: 1px solid var(--line); overflow: hidden;
+}
+.attr-row .attr-fill {
+  height: 100%; background: linear-gradient(90deg, var(--gold-light), var(--gold));
+}
+
+.lv-display {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 14px;
+}
+.lv-display .lv-big {
+  font-family: 'Georgia','Noto Serif SC',serif;
+  font-size: 42px; font-weight: 700; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1.5px var(--gold-dark);
+  text-shadow: 0 0 8px rgba(184,147,90,0.35);
+}
+.lv-display .lv-suffix {
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--muted); font-size: 12px; letter-spacing: 2px;
+}
+.lv-display .rank-chip {
+  margin-left: auto;
+  padding: 6px 14px; border-radius: 2px;
+  font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 2px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+
+.exp-block {
+  margin-bottom: 14px;
+  padding: 10px 12px; border-radius: 3px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+}
+.exp-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10.5px; margin-bottom: 6px;
+  color: var(--muted); letter-spacing: 1px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+}
+.exp-head .num {
+  color: var(--gold-deep); font-weight: 700;
+  font-family: 'Georgia',monospace; font-size: 12px;
+}
+.exp-bar {
+  height: 8px; background: rgba(216,207,190,0.5);
+  border: 1px solid var(--line); overflow: hidden;
+}
+.exp-fill {
+  height: 100%; transition: width 0.4s ease;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold));
+}
+
+.free-points {
+  display: inline-block; margin-top: 8px;
+  padding: 3px 10px; border-radius: 2px;
+  background: rgba(224,192,136,0.2);
+  border: 1px dashed var(--gold);
+  color: var(--gold-deep);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  font-size: 11px; letter-spacing: 1px;
+}
+.free-points .num { font-weight: 700; font-family: 'Georgia',monospace; font-size: 12px; }
 </style>
 </head>
 <body>
+
 <div id="tower-panel" class="marble">
   <div id="worldbar" class="marble-deep"></div>
   <div id="main">
@@ -1024,21 +1034,127 @@ body {
 </div>
 
 <script>
+/* ============================================================
+   计算层：监听 MVU 更新，重算 _派生 并整体写回
+   ============================================================ */
 (function() {
-  const EMPTY_DATA = {
-    世界: { 纪元: '—', 天气: '—', 时间: { 时: 0, 分: 0 }, 已进入位面时间: 0, 休息剩余天数: 0, 当前位面: '高塔' },
-    历史: { 已完成位面: {}, 称号: {} },
-    轮回者信息: {
-      姓名: '轮回者', 性别: '男',
-      永久品级: '凡人', 当前品级: '凡人',
-      伤势状态: '无伤', 当前状态: '', 位面身份: '', 当前场景: '',
-      轮回点: 0, 位面货币: { 单位: '', 数量: 0 },
-      当前装备: {}, 永久技能: {}, 临时技能: {}, 持有物品: {}
-    },
-    角色: {},
-    任务: { 核心目标: {}, 故事线: {}, 日常任务: {} },
-    建筑: {}
-  };
+  'use strict';
+
+  function toNum(v, def) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : (def ?? 0);
+  }
+
+  function rankByLv(lv) {
+    if (lv <= 15) return '凡人';
+    if (lv <= 30) return '精锐';
+    if (lv <= 50) return '勇者';
+    if (lv <= 75) return '英雄';
+    if (lv <= 100) return '半神';
+    return '神祇';
+  }
+
+  function hpMaxByCon(con) {
+    if (con <= 30) return 150 * con;
+    if (con <= 60) return 4500 + 100 * (con - 30);
+    return 7500 + 60 * (con - 60);
+  }
+
+  function computeDerived(五维, 装备) {
+    const str = Math.max(1, Math.floor(toNum(五维?.力量, 1)));
+    const agi = Math.max(1, Math.floor(toNum(五维?.敏捷, 1)));
+    const con = Math.max(1, Math.floor(toNum(五维?.体质, 1)));
+    const int_ = Math.max(1, Math.floor(toNum(五维?.智力, 1)));
+    const spi = Math.max(1, Math.floor(toNum(五维?.精神, 1)));
+    const lv = str + agi + con + int_ + spi;
+    const 位阶 = rankByLv(lv);
+    const hp上限 = hpMaxByCon(con);
+    const mp上限 = (int_ + spi) * 30;
+    const sp上限 = (con + agi) * 15;
+    let 护甲总值 = 0;
+    for (const item of Object.values(装备 || {})) {
+      if (item && item.类型 === '防具' && item.护甲值 != null) {
+        护甲总值 += toNum(item.护甲值, 0);
+      }
+    }
+    return {
+      lv, 位阶, hp上限, mp上限, sp上限, 护甲总值,
+      修正: {
+        力量: Math.floor(str / 3),
+        敏捷: Math.floor(agi / 3),
+        体质: Math.floor(con / 3),
+        智力: Math.floor(int_ / 3),
+        精神: Math.floor(spi / 3),
+      },
+    };
+  }
+
+  function derivedChanged(a, b) {
+    if (!a || !b) return true;
+    return JSON.stringify(a) !== JSON.stringify(b);
+  }
+
+  async function recalcAll() {
+    if (!window.Mvu) return;
+    try { await waitGlobalInitialized('Mvu'); } catch(e) { /* 兼容没有该 API 的环境 */ }
+    if (!window.Mvu) return;
+
+    let mvuData = null;
+    try {
+      if (typeof Mvu.getCurrentMvuData === 'function') mvuData = Mvu.getCurrentMvuData();
+    } catch(e) { console.warn('[tower] get mvu data failed', e); return; }
+    if (!mvuData || !mvuData.stat_data) return;
+    if (typeof Mvu.replaceMvuData !== 'function') return;
+
+    const stat = mvuData.stat_data;
+    let dirty = false;
+
+    // 轮回者
+    if (stat.轮回者 && stat.轮回者.五维) {
+      const d = computeDerived(stat.轮回者.五维, stat.轮回者.当前装备);
+      if (derivedChanged(d, stat.轮回者._派生)) {
+        _.set(mvuData, 'stat_data.轮回者._派生', d);
+        dirty = true;
+      }
+    }
+
+    // 角色
+    const 角色 = stat.角色 || {};
+    for (const [name, c] of Object.entries(角色)) {
+      if (!c || !c.普通 || !c.普通.五维) continue;
+      const d = computeDerived(c.普通.五维, c.普通.装备);
+      if (derivedChanged(d, c._派生)) {
+        _.set(mvuData, `stat_data.角色.${name}._派生`, d);
+        dirty = true;
+      }
+    }
+
+    if (!dirty) return;
+
+    // 一次性整体写回
+    try {
+      let mid = -1;
+      if (typeof getCurrentMessageId === 'function') mid = getCurrentMessageId();
+      if (mid < 0 && window.SillyTavern && Array.isArray(SillyTavern.chat)) {
+        mid = SillyTavern.chat.length - 1;
+      }
+      if (mid >= 0) {
+        await Mvu.replaceMvuData(mvuData, { type: 'message', message_id: mid });
+      }
+    } catch(e) { console.warn('[tower] replaceMvuData failed', e); }
+  }
+
+  window.__towerRecalc = recalcAll;
+})();
+
+
+/* ============================================================
+   展示层：读取 stat_data 渲染
+   ============================================================ */
+(function() {
+  'use strict';
+
+  const RANK_MAX = { '凡人': 8, '精锐': 18, '勇者': 30, '英雄': 45, '半神': 60, '神祇': 90 };
 
   function getVariables() {
     try {
@@ -1047,7 +1163,7 @@ body {
         if (all && Object.keys(all).length) return all.stat_data || all;
       }
     } catch(e) {}
-    return EMPTY_DATA;
+    return {};
   }
   function getVar(path, def) {
     try {
@@ -1080,8 +1196,12 @@ body {
     if (!t || typeof t !== 'object') return '--:--';
     return pad2(toNum(t.时, 0)) + ':' + pad2(toNum(t.分, 0));
   }
+  function clampPct(cur, max) {
+    if (!max || max <= 0) return 0;
+    return Math.max(0, Math.min(100, Math.round(cur / max * 100)));
+  }
 
-  // ===== 头像管理 =====
+  // 头像
   const AVATAR_PREFIX = 'tower_avatar_';
   function getAvatar(name) {
     try { return localStorage.getItem(AVATAR_PREFIX + name) || ''; } catch(e) { return ''; }
@@ -1090,12 +1210,11 @@ body {
     try {
       if (dataUrl) localStorage.setItem(AVATAR_PREFIX + name, dataUrl);
       else localStorage.removeItem(AVATAR_PREFIX + name);
-    } catch(e) { alert('头像保存失败：存储空间可能已满'); }
+    } catch(e) { alert('头像保存失败'); }
   }
   function pickAvatar(name, onDone) {
     const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    input.type = 'file'; input.accept = 'image/*';
     input.onchange = () => {
       const file = input.files && input.files[0];
       if (!file) return;
@@ -1121,15 +1240,13 @@ body {
     input.click();
   }
 
-  // ===== 通用详情弹窗 =====
+  // Popover
   let _popoverAnchor = null;
-
   function hideInfoPopover() {
     const pop = document.getElementById('info-popover');
     if (pop) pop.remove();
     _popoverAnchor = null;
   }
-
   function showInfoPopover(anchor, html) {
     hideInfoPopover();
     const pop = document.createElement('div');
@@ -1137,10 +1254,8 @@ body {
     pop.className = 'info-popover';
     pop.innerHTML = html;
     document.body.appendChild(pop);
-
     const rect = anchor.getBoundingClientRect();
-    const popW = pop.offsetWidth;
-    const popH = pop.offsetHeight;
+    const popW = pop.offsetWidth, popH = pop.offsetHeight;
     let left = rect.left;
     if (left + popW > window.innerWidth - 12) left = window.innerWidth - popW - 12;
     if (left < 12) left = 12;
@@ -1153,28 +1268,20 @@ body {
     pop.style.top = top + 'px';
     _popoverAnchor = anchor;
   }
-
   function toggleInfoPopover(anchor, html) {
-    if (_popoverAnchor === anchor) {
-      hideInfoPopover();
-      return;
-    }
+    if (_popoverAnchor === anchor) { hideInfoPopover(); return; }
     showInfoPopover(anchor, html);
   }
-
   document.addEventListener('click', e => {
     if (e.target.closest('.item-card') || e.target.closest('.skill-card') ||
         e.target.closest('.skill-tag-clickable') || e.target.closest('.equip-clickable') ||
         e.target.closest('#info-popover')) return;
     hideInfoPopover();
   });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') hideInfoPopover();
-  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hideInfoPopover(); });
   window.addEventListener('resize', hideInfoPopover);
   document.addEventListener('scroll', hideInfoPopover, true);
 
-  // ===== 详情 HTML 构造 =====
   function buildEffectsHtml(effects) {
     const entries = Object.entries(effects || {});
     if (!entries.length) return '';
@@ -1186,60 +1293,65 @@ body {
     return html;
   }
 
-  function buildItemPopoverHtml(item, opts) {
-    opts = opts || {};
-    const name = item.名称 || opts.fallbackName || '—';
+  function buildEquipPopoverHtml(item) {
+    if (!item) return '<div class="info-popover-head"><span class="info-popover-title">空</span></div>';
+    const name = item.名称 || '—';
     const quality = item.品质 || '普通';
-    const type = item.类型 || opts.fallbackType || '';
-    const qty = toNum(item.数量, 1);
-    const desc = item.介绍 || '';
+    const type = item.类型 || '';
+    const armor = item.护甲值;
+    const atk = item.攻击力;
+    const dist = item.有效距离;
+    const hold = item.持用;
+    const wear = item.穿着状态 || '';
+    const look = item.外观描述 || '';
+    const intro = item.介绍 || '';
     const effects = item.效果 || {};
-    const slot = opts.slot || '';
 
-    let head = `<div class="info-popover-head"><span class="info-popover-title">${esc(name)}</span>`;
-    head += `<span class="info-popover-badge q-${esc(quality)}" style="background:var(--q-${esc(quality)});">${esc(quality)}</span>`;
-    if (slot) head += `<span class="info-popover-type">${esc(slot)}</span>`;
-    else if (type) head += `<span class="info-popover-type">${esc(type)}</span>`;
-    head += '</div>';
-
+    let head = `<div class="info-popover-head">
+      <span class="info-popover-title">${esc(name)}</span>
+      <span class="info-popover-badge" style="background:var(--q-${esc(quality)});">${esc(quality)}</span>
+      ${type ? `<span class="info-popover-type">${esc(type)}</span>` : ''}
+    </div>`;
     let body = '';
-    if (qty > 1) {
-      body += `<div class="info-popover-row"><span class="k">数量</span>×${qty}</div>`;
-    }
-    if (desc) {
-      body += `<div class="info-popover-row">${esc(desc)}</div>`;
-    }
+    if (wear) body += `<div class="info-popover-row"><span class="k">穿着</span>${esc(wear)}</div>`;
+    if (look) body += `<div class="info-popover-row">${esc(look)}</div>`;
+    if (atk != null) body += `<div class="info-popover-row"><span class="k">攻击</span>${esc(atk)}</div>`;
+    if (armor != null) body += `<div class="info-popover-row"><span class="k">护甲</span>${esc(armor)}</div>`;
+    if (dist) body += `<div class="info-popover-row"><span class="k">距离</span>${esc(dist)}</div>`;
+    if (hold) body += `<div class="info-popover-row"><span class="k">持用</span>${esc(hold)}</div>`;
+    if (intro) body += `<div class="info-popover-row">${esc(intro)}</div>`;
     body += buildEffectsHtml(effects);
-
     return head + body;
   }
 
-  function buildSkillPopoverHtml(skill, opts) {
-    opts = opts || {};
-    const name = opts.fallbackName || '—';
-    const level = toNum(skill.等级, 1);
-    const type = skill.类型 || '主动';
-    const desc = skill.描述 || '';
-    const effects = skill.效果 || {};
-    const src = skill.来源 || '';
+  function buildSkillPopoverHtml(name, s) {
+    const quality = s.品质 || '普通';
+    const type = s.类型 || '主动';
+    const attr = s.对应属性 || '—';
+    const cost = s.消耗 || '无';
+    const dist = s.有效距离 || '无';
+    const target = s.作用目标 ?? 0;
+    const power = s.技能威力 ?? 0;
+    const intro = s.介绍 || '';
+    const effects = s.效果 || {};
 
-    let head = `<div class="info-popover-head"><span class="info-popover-title">${esc(name)}</span>`;
-    head += `<span class="info-popover-badge" style="background:var(--gold-deep);">Lv.${level}</span>`;
-    head += `<span class="info-popover-type ${type === '被动' ? 'passive' : ''}">${esc(type)}</span>`;
-    head += '</div>';
-
+    let head = `<div class="info-popover-head">
+      <span class="info-popover-title">${esc(name)}</span>
+      <span class="info-popover-badge" style="background:var(--q-${esc(quality)});">${esc(quality)}</span>
+      <span class="info-popover-type ${type==='被动'?'passive':''}">${esc(type)}</span>
+    </div>`;
     let body = '';
-    if (desc) {
-      body += `<div class="info-popover-row">${esc(desc)}</div>`;
+    body += `<div class="info-popover-row"><span class="k">属性</span>${esc(attr)}</div>`;
+    body += `<div class="info-popover-row"><span class="k">消耗</span>${esc(cost)}</div>`;
+    if (type === '主动') {
+      body += `<div class="info-popover-row"><span class="k">距离</span>${esc(dist)} · <span class="k">目标</span>${esc(target)} · <span class="k">威力</span>${esc(power)}</div>`;
     }
+    if (intro) body += `<div class="info-popover-row">${esc(intro)}</div>`;
     body += buildEffectsHtml(effects);
-    if (src) {
-      body += `<div class="info-popover-footer">来源 · ${esc(src)}</div>`;
-    }
     return head + body;
   }
 
-  // ===== 世界条 =====
+  // 世界条
   function renderWorldbar() {
     const era    = getVar('世界.纪元', '—');
     const plane  = getVar('世界.当前位面', '高塔');
@@ -1277,42 +1389,115 @@ body {
     document.getElementById('worldbar').innerHTML = html;
   }
 
-  // ===== 轮回者主卡 =====
+  function renderResBar(label, cur, max, cls) {
+    const pct = clampPct(cur, max);
+    return `<div class="res-bar-row">
+      <span class="lbl">${esc(label)}</span>
+      <div class="res-bar-track"><div class="res-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <span class="res-bar-num">${toNum(cur,0)}/${toNum(max,0)}</span>
+    </div>`;
+  }
+
+  // 雷达图
+  function renderRadar(五维, 位阶) {
+    const attrs = ['力量','敏捷','体质','智力','精神'];
+    const max = RANK_MAX[位阶] || 8;
+    const cx = 100, cy = 100, R = 66;
+    const angle = i => -Math.PI / 2 + i * 2 * Math.PI / 5;
+
+    let grid = '';
+    for (let g = 1; g <= 4; g++) {
+      const r = R * g / 4;
+      const pts = attrs.map((_, i) => {
+        const a = angle(i);
+        return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+      }).join(' ');
+      const stroke = g === 4 ? 'var(--gold-light)' : 'var(--line)';
+      const sw = g === 4 ? 1 : 0.5;
+      grid += `<polygon points="${pts}" fill="none" stroke="${stroke}" stroke-width="${sw}"/>`;
+    }
+
+    let axes = '';
+    for (let i = 0; i < 5; i++) {
+      const a = angle(i);
+      axes += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(a)}" y2="${cy + R * Math.sin(a)}" stroke="var(--line)" stroke-width="0.5"/>`;
+    }
+
+    const vals = attrs.map(k => Math.max(0, Math.min(max, Number(五维?.[k]) || 0)));
+    const dataPts = vals.map((v, i) => {
+      const r = R * v / max;
+      const a = angle(i);
+      return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+    }).join(' ');
+
+    let dots = '';
+    vals.forEach((v, i) => {
+      const r = R * v / max;
+      const a = angle(i);
+      dots += `<circle cx="${cx + r * Math.cos(a)}" cy="${cy + r * Math.sin(a)}" r="2.2" fill="var(--gold-dark)"/>`;
+    });
+
+    let labels = '';
+    attrs.forEach((k, i) => {
+      const a = angle(i);
+      const lx = cx + (R + 22) * Math.cos(a);
+      const ly = cy + (R + 22) * Math.sin(a);
+      labels += `<text x="${lx}" y="${ly - 3}" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="'Noto Serif SC', serif">${k}</text>`;
+      labels += `<text x="${lx}" y="${ly + 9}" text-anchor="middle" font-size="10" fill="var(--gold-deep)" font-family="Georgia, monospace" font-weight="700">${vals[i]}/${max}</text>`;
+    });
+
+    return `<svg viewBox="0 0 200 200" class="radar-svg">${grid}${axes}<polygon points="${dataPts}" fill="rgba(184,147,90,0.18)" stroke="var(--gold)" stroke-width="1.5"/>${dots}${labels}</svg>`;
+  }
+
+  function renderAttrRows(五维, 位阶) {
+    const attrs = ['力量','敏捷','体质','智力','精神'];
+    const max = RANK_MAX[位阶] || 8;
+    return attrs.map(k => {
+      const v = Math.max(0, Math.min(max, Number(五维?.[k]) || 0));
+      const pct = Math.round(v / max * 100);
+      return `<div class="attr-row">
+        <span class="name">${k}</span>
+        <span class="num">${v}</span>
+        <span class="max">/${max}</span>
+        <div class="attr-track"><div class="attr-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  // 概览卡
   function renderReincarnatorCard() {
-    const info = getVar('轮回者信息', {});
+    const info = getVar('轮回者', {});
+    const derived = info._派生 || {};
     const name = info.姓名 || '轮回者';
-    const rank = info.当前品级 || info.永久品级 || '凡人';
-    const permRank = info.永久品级 || '凡人';
-    const hurt = info.伤势状态 || '无伤';
+    const rank = derived.位阶 || '凡人';
+    const lv = toNum(derived.lv, 5);
+    const armor = toNum(derived.护甲总值, 0);
     const points = toNum(info.轮回点, 0);
     const scene = info.当前场景 || '—';
-    const status = info.当前状态 || '—';
     const planeId = info.位面身份 || '';
     const currency = info.位面货币 || {};
     const inTower = getVar('世界.当前位面', '高塔') === '高塔';
-
-    let rankHtml = `<span class="rank-badge rank-${esc(rank)}">${esc(rank)}</span>`;
-    if (rank !== permRank) {
-      rankHtml += `<span class="rank-temp">永久 · ${esc(permRank)}</span>`;
-    }
+    const hp = toNum(info.当前HP, 0);
+    const hpMax = toNum(derived.hp上限, 1);
+    const mp = toNum(info.当前MP, 0);
+    const mpMax = toNum(derived.mp上限, 1);
+    const sp = toNum(info.当前SP, 0);
+    const spMax = toNum(derived.sp上限, 1);
+    const san = toNum(info.当前SAN, 0);
 
     let currencyHtml = '';
     if (!inTower && currency.单位 && toNum(currency.数量, 0) > 0) {
       currencyHtml = `<div class="reincarnator-row">
         <span class="label">货币</span>
-        <span class="value">
-          <span class="currency">
-            <span class="num">${toNum(currency.数量, 0).toLocaleString()}</span>
-            <span>${esc(currency.单位)}</span>
-          </span>
-        </span>
+        <span class="value"><span class="currency"><span class="num">${toNum(currency.数量, 0).toLocaleString()}</span><span>${esc(currency.单位)}</span></span></span>
       </div>`;
     }
 
     document.getElementById('reincarnator-card').innerHTML = `
       <div class="reincarnator-head">
-        ${rankHtml}
-        <span class="hurt-tag hurt-${esc(hurt)}">${esc(hurt)}</span>
+        <span class="rank-badge rank-${esc(rank)}">${esc(rank)}</span>
+        <span class="lv-artistic"><span class="prefix">LV</span>${lv}</span>
+        <span class="armor-small">护甲<span class="num">${armor}</span></span>
         <div class="points-block">
           <span class="label">轮回点</span>
           <span class="value">${points.toLocaleString()}</span>
@@ -1321,14 +1506,19 @@ body {
       <div class="reincarnator-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
       ${!inTower && planeId ? `<div class="reincarnator-row"><span class="label">身份</span><span class="value">${esc(planeId)}</span></div>` : ''}
       <div class="reincarnator-row"><span class="label">场景</span><span class="value">${esc(scene)}</span></div>
-      <div class="reincarnator-row"><span class="label">状态</span><span class="value">${esc(status)}</span></div>
+      <div style="padding-top: 10px; border-top: 1px solid var(--line); margin-top: 6px;">
+        ${renderResBar('HP', hp, hpMax, 'fill-hp')}
+        ${renderResBar('MP', mp, mpMax, 'fill-mp')}
+        ${renderResBar('SP', sp, spMax, 'fill-sp')}
+        ${renderResBar('SAN', san, 100, 'fill-san')}
+      </div>
       ${currencyHtml}
     `;
   }
 
-  // ===== 轮回者详情 =====
+  // 轮回者详情
   function openReincarnatorDetail() {
-    renderReincarnatorTab('equip');
+    renderReincarnatorTab('level');
     document.getElementById('mask-reincarnator').classList.add('show');
   }
 
@@ -1336,6 +1526,7 @@ body {
     const body = document.getElementById('reincarnator-detail');
     body.innerHTML = `
       <div class="tabs">
+        <div class="tab ${tab==='level'?'active':''}" data-reincarnator-tab="level">等级</div>
         <div class="tab ${tab==='equip'?'active':''}" data-reincarnator-tab="equip">装备</div>
         <div class="tab ${tab==='skill'?'active':''}" data-reincarnator-tab="skill">技能</div>
         <div class="tab ${tab==='item'?'active':''}" data-reincarnator-tab="item">物品</div>
@@ -1347,7 +1538,42 @@ body {
     });
 
     const content = document.getElementById('reincarnator-tab-content');
-    const info = getVar('轮回者信息', {});
+    const info = getVar('轮回者', {});
+    const derived = info._派生 || {};
+
+    if (tab === 'level') {
+      const rank = derived.位阶 || '凡人';
+      const lv = toNum(derived.lv, 5);
+      const expCur = toNum(info.当前EXP, 0);
+      const threshold = lv * 20;
+      const expPct = Math.min(100, Math.round(expCur / threshold * 100));
+      const fp = toNum(info.自由点, 0);
+
+      let html = `
+        <div class="lv-display">
+          <span class="lv-big">${lv}</span>
+          <span class="lv-suffix">LEVEL</span>
+          <span class="rank-chip rank-${esc(rank)}">${esc(rank)}</span>
+        </div>
+        <div class="exp-block">
+          <div class="exp-head">
+            <span>升级进度</span>
+            <span class="num">${expCur} / ${threshold}</span>
+          </div>
+          <div class="exp-bar"><div class="exp-fill" style="width:${expPct}%"></div></div>
+          ${fp > 0 ? `<div class="free-points">可分配自由点 · <span class="num">${fp}</span></div>` : ''}
+        </div>
+        <div class="block">
+          <div class="block-title">五维</div>
+          <div class="level-layout">
+            <div class="radar-wrap">${renderRadar(info.五维, rank)}</div>
+            <div class="attr-list">${renderAttrRows(info.五维, rank)}</div>
+          </div>
+        </div>
+      `;
+      content.innerHTML = html;
+      return;
+    }
 
     if (tab === 'equip') {
       const equip = info.当前装备 || {};
@@ -1360,11 +1586,13 @@ body {
       entries.forEach(([slot, item]) => {
         const name = (item && item.名称) || '—';
         const quality = (item && item.品质) || '普通';
+        const wear = (item && item.穿着状态) || '完好';
         html += `<div class="item-card q-${esc(quality)}" data-equip-slot="${esc(slot)}">
           <div class="item-name">
             <span class="item-slot-tag">${esc(slot)}</span>
             ${esc(name)}
-            <span class="item-qty">${esc(quality)}</span>
+            <span class="item-qty" style="background:var(--q-${esc(quality)});color:#fff;">${esc(quality)}</span>
+            <span class="item-qty">${esc(wear)}</span>
           </div>
         </div>`;
       });
@@ -1374,100 +1602,85 @@ body {
         const item = equip[slot] || {};
         el.addEventListener('click', e => {
           e.stopPropagation();
-          toggleInfoPopover(el, buildItemPopoverHtml(item, { slot, fallbackName: '—' }));
+          toggleInfoPopover(el, buildEquipPopoverHtml(item));
         });
       });
+      return;
+    }
 
-    } else if (tab === 'skill') {
+    if (tab === 'skill') {
       const perm = info.永久技能 || {};
       const temp = info.临时技能 || {};
+      const renderSkillList = (obj, scope) => sortedEntries(obj).map(([name, s]) => {
+        const quality = s.品质 || '普通';
+        const type = s.类型 || '主动';
+        return `<div class="skill-card" data-skill-scope="${scope}" data-skill-name="${esc(name)}">
+          <div class="skill-body">
+            <div class="skill-name">
+              ${esc(name)}
+              <span class="skill-quality-tag" style="background:var(--q-${esc(quality)});">${esc(quality)}</span>
+              <span class="skill-type-tag ${type==='被动'?'passive':''}">${esc(type)}</span>
+            </div>
+            <div class="skill-desc">${esc(s.介绍||'暂无描述')}</div>
+            <div class="skill-meta-row">
+              <span class="kv">${esc(s.对应属性||'—')}</span>
+              <span class="kv">${esc(s.消耗||'无')}</span>
+              ${type==='主动'?`<span class="kv">${esc(s.有效距离||'无')} · ${esc(s.作用目标??0)} 目标 · 威力 ${esc(s.技能威力??0)}</span>`:''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
       let html = '';
-      const permEntries = sortedEntries(perm);
-      if (permEntries.length) {
-        html += `<div class="section-title">永久技能</div>`;
-        permEntries.forEach(([name, s]) => {
-          const type = s.类型 || '主动';
-          const typeCls = type === '被动' ? 'passive' : '';
-          html += `<div class="skill-card" data-skill-scope="perm" data-skill-name="${esc(name)}">
-            <div class="skill-body">
-              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span><span class="skill-type-tag ${typeCls}">${esc(type)}</span></div>
-              <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
-              ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
-            </div>
-          </div>`;
-        });
-      }
-      const tempEntries = sortedEntries(temp);
-      if (tempEntries.length) {
-        html += `<div class="section-title" style="margin-top:16px;">临时技能</div>`;
-        tempEntries.forEach(([name, s]) => {
-          const type = s.类型 || '主动';
-          const typeCls = type === '被动' ? 'passive' : '';
-          html += `<div class="skill-card temp" data-skill-scope="temp" data-skill-name="${esc(name)}">
-            <div class="skill-body">
-              <div class="skill-name">${esc(name)}<span class="skill-lv">Lv.${toNum(s.等级, 1)}</span><span class="skill-type-tag ${typeCls}">${esc(type)}</span></div>
-              <div class="skill-desc">${esc(s.描述||'暂无描述')}</div>
-              ${s.来源 ? `<div class="skill-src">来源 · ${esc(s.来源)}</div>` : ''}
-            </div>
-          </div>`;
-        });
-      }
+      const permHtml = renderSkillList(perm, 'perm');
+      const tempHtml = renderSkillList(temp, 'temp');
+      if (permHtml) html += `<div class="section-title">永久技能</div>${permHtml}`;
+      if (tempHtml) html += `<div class="section-title" style="margin-top:16px;">临时技能</div>${tempHtml}`;
       if (!html) html = '<div class="empty-tip">尚未掌握任何技能</div>';
       content.innerHTML = html;
       content.querySelectorAll('[data-skill-scope]').forEach(el => {
         const scope = el.dataset.skillScope;
         const name = el.dataset.skillName;
         const src = scope === 'temp' ? temp : perm;
-        const skill = src[name] || {};
         el.addEventListener('click', e => {
           e.stopPropagation();
-          toggleInfoPopover(el, buildSkillPopoverHtml(skill, { fallbackName: name }));
+          toggleInfoPopover(el, buildSkillPopoverHtml(name, src[name] || {}));
         });
       });
-
-    } else {
-      const items = info.持有物品 || {};
-      const entries = sortedEntries(items);
-      if (!entries.length) {
-        content.innerHTML = '<div class="empty-tip">囊中空空</div>';
-        return;
-      }
-      const groups = {};
-      const typeOrder = ['武器','防具','饰品','消耗品','特殊'];
-      entries.forEach(([name, item]) => {
-        const t = item.类型 || '特殊';
-        (groups[t] = groups[t] || []).push([name, item]);
-      });
-      const qOrder = { '普通':0,'精良':1,'稀有':2,'史诗':3,'传说':4,'神话':5 };
-      let html = '';
-      const allTypes = [...typeOrder.filter(t=>groups[t]), ...Object.keys(groups).filter(t=>!typeOrder.includes(t))];
-      allTypes.forEach(type => {
-        const list = groups[type].slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0));
-        html += `<div class="section-group"><div class="section-title">${esc(type)} · ${list.length}</div>`;
-        list.forEach(([name, item]) => {
-          html += `<div class="item-card q-${esc(item.品质||'普通')}" data-item-name="${esc(name)}">
-            <div class="item-name">
-              ${esc(item.名称||name)}
-              ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
-            </div>
-            ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
-          </div>`;
-        });
-        html += `</div>`;
-      });
-      content.innerHTML = html;
-      content.querySelectorAll('[data-item-name]').forEach(el => {
-        const name = el.dataset.itemName;
-        const item = items[name] || {};
-        el.addEventListener('click', e => {
-          e.stopPropagation();
-          toggleInfoPopover(el, buildItemPopoverHtml(item, { fallbackName: name }));
-        });
-      });
+      return;
     }
+
+    // item
+    const items = info.持有物品 || {};
+    const entries = sortedEntries(items);
+    if (!entries.length) {
+      content.innerHTML = '<div class="empty-tip">囊中空空</div>';
+      return;
+    }
+    const qOrder = { '普通':0,'精良':1,'稀有':2,'史诗':3,'传说':4,'神话':5 };
+    let html = '';
+    entries.slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0)).forEach(([name, item]) => {
+      html += `<div class="item-card q-${esc(item.品质||'普通')}" data-item-name="${esc(name)}">
+        <div class="item-name">
+          ${esc(item.名称||name)}
+          ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
+        </div>
+        ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
+      </div>`;
+    });
+    content.innerHTML = html;
+    content.querySelectorAll('[data-item-name]').forEach(el => {
+      const name = el.dataset.itemName;
+      const item = items[name] || {};
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleInfoPopover(el, buildEquipPopoverHtml({
+          名称: item.名称 || name, 品质: item.品质, 类型: item.类型, 介绍: item.介绍, 效果: item.效果
+        }));
+      });
+    });
   }
 
-  // ===== 角色列表 =====
+  // 角色列表
   function openCharList() {
     const body = document.getElementById('char-list-body');
     const entries = sortedEntries(getVar('角色', {}));
@@ -1477,20 +1690,21 @@ body {
       body.innerHTML = `<div class="card-grid">${
         entries.map(([key, c]) => {
           const n = c.普通 || {};
-          const rank = n.品级 || '凡人';
+          const d = c._派生 || {};
+          const rank = d.位阶 || '凡人';
+          const lv = toNum(d.lv, 5);
           const name = n.姓名 || key;
-          const state = n.状态 || '未收服';
+          const state = n.归属 || '未收服';
           const unrec = state === '未收服' ? 'unrecruited' : '';
           const avatar = getAvatar(name);
-          const avatarInner = avatar
-            ? `<img src="${esc(avatar)}" alt="">`
-            : esc(name.slice(0,1));
+          const avatarInner = avatar ? `<img src="${esc(avatar)}" alt="">` : esc(name.slice(0,1));
           return `<div class="char-card ${unrec}" data-char-key="${esc(key)}">
             <div class="char-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
             <div style="flex:1;min-width:0;">
               <div class="char-name">
                 ${esc(name)}
                 <span class="rank-mini rank-${esc(rank)}">${esc(rank)}</span>
+                <span class="rank-mini" style="background:var(--gold-deep);">LV${lv}</span>
               </div>
               <div class="char-sub">${esc(n.身份||'')}</div>
               <div class="char-sub">· ${esc(state)} ·</div>
@@ -1507,28 +1721,27 @@ body {
       body.querySelectorAll('[data-avatar-name]').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
-          const nm = el.dataset.avatarName;
-          pickAvatar(nm, () => openCharList());
+          pickAvatar(el.dataset.avatarName, () => openCharList());
         });
       });
     }
     document.getElementById('mask-char-list').classList.add('show');
   }
 
-  // ===== 角色详情 =====
+  // 角色详情
   function openCharDetail(key) {
     const allChars = getVar('角色', {});
     const c = allChars[key] || {};
     if (!c || !Object.keys(c).length) return;
     const n = c.普通 || {};
+    const d = c._派生 || {};
     const name = n.姓名 || key;
-    const rank = n.品级 || '凡人';
+    const rank = d.位阶 || '凡人';
+    const lv = toNum(d.lv, 5);
     const fav = toNum(n.好感度, 0);
     const cor = toNum(n.堕落值, 0);
     const avatar = getAvatar(name);
-    const avatarInner = avatar
-      ? `<img src="${esc(avatar)}" alt="">`
-      : esc(name.slice(0,1));
+    const avatarInner = avatar ? `<img src="${esc(avatar)}" alt="">` : esc(name.slice(0,1));
 
     const body = document.getElementById('char-detail-body');
     body.innerHTML = `
@@ -1537,11 +1750,14 @@ body {
           <div class="detail-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
           <div class="detail-name">${esc(name)}</div>
           <div class="detail-rank rank-${esc(rank)}">${esc(rank)}</div>
+          <div style="margin-top:6px;">
+            <span class="lv-artistic" style="font-size:20px;"><span class="prefix">LV</span>${lv}</span>
+          </div>
           <div class="detail-meta">
-            ${n.年龄!=null ? esc(n.年龄)+' 岁' : ''}<br>
+            ${n.年龄 ? esc(n.年龄)+' 岁' : ''}<br>
             ${esc(n.身份||'')}<br>
             <span style="color:var(--gold-dark);">来源 · ${esc(n.来源位面||'未知')}</span><br>
-            <span style="color:var(--gold-dark);">状态 · ${esc(n.状态||'未收服')}</span>
+            <span style="color:var(--gold-dark);">归属 · ${esc(n.归属||'未收服')}</span>
           </div>
         </div>
         <div class="detail-right">
@@ -1558,6 +1774,7 @@ body {
           <div class="tabs" style="margin-top:10px;">
             <div class="tab active" data-char-tab="status">状态</div>
             <div class="tab" data-char-tab="profile">档案</div>
+            <div class="tab" data-char-tab="equip">装备</div>
             <div class="tab" data-char-tab="nsfw">NSFW</div>
           </div>
           <div id="char-tab-content"></div>
@@ -1568,13 +1785,9 @@ body {
     const avatarEl = body.querySelector('[data-avatar-name]');
     if (avatarEl) {
       avatarEl.addEventListener('click', () => {
-        const nm = avatarEl.dataset.avatarName;
-        pickAvatar(nm, dataUrl => {
-          avatarEl.innerHTML = `<img src="${esc(dataUrl)}" alt="">`;
-        });
+        pickAvatar(name, dataUrl => { avatarEl.innerHTML = `<img src="${esc(dataUrl)}" alt="">`; });
       });
     }
-
     body.querySelectorAll('[data-char-tab]').forEach(el => {
       el.addEventListener('click', () => {
         body.querySelectorAll('[data-char-tab]').forEach(t => t.classList.remove('active'));
@@ -1591,26 +1804,29 @@ body {
     const c = allChars[key] || {};
     const n = c.普通 || {};
     const nsfw = c.NSFW || {};
+    const d = c._派生 || {};
     const content = document.getElementById('char-tab-content');
     if (!content) return;
 
     if (tab === 'status') {
-      const equip = n.装备 || {};
-      const weapon = equip.武器 || {};
-      const cloth = equip.衣物 || {};
+      const states = n.状态 || {};
+      const stateEntries = sortedEntries(states);
+      const stateHtml = stateEntries.length
+        ? stateEntries.map(([name, s]) => `
+            <div class="kv-row">
+              <span class="k">${esc(name)}</span>
+              <span class="v">${esc(s.效果||'')}${s.剩余?` <span style="color:var(--muted);font-size:10px;">(${esc(s.剩余)})</span>`:''}</span>
+            </div>`).join('')
+        : '<div class="kv-row"><span class="v" style="color:var(--muted);">无状态效果</span></div>';
+
       content.innerHTML = `
         <div class="block">
-          <div class="block-title">当前情绪</div>
-          <div style="font-size:12.5px;">${esc(n.当前情绪 || '平静')}</div>
+          <div class="block-title">状态效果</div>
+          ${stateHtml}
         </div>
         <div class="block">
           <div class="block-title">内心想法</div>
           <div class="quote-block">${esc(n.当前内心想法 || '（没有记录）')}</div>
-        </div>
-        <div class="block">
-          <div class="block-title">随身装备</div>
-          <div class="kv-row"><span class="k">武器</span><span class="v q-${esc(weapon.品质||'普通')} equip-clickable" data-char-equip="武器" style="padding-left:8px;border-left:2px solid;">${esc(weapon.名称||'空')}</span></div>
-          <div class="kv-row"><span class="k">衣物</span><span class="v q-${esc(cloth.品质||'普通')} equip-clickable" data-char-equip="衣物" style="padding-left:8px;border-left:2px solid;">${esc(cloth.名称||'空')}</span></div>
         </div>
         <div class="block">
           <div class="block-title">身份标签</div>
@@ -1619,27 +1835,40 @@ body {
           ).join('') || '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>'}
         </div>
       `;
+      return;
+    }
 
-      content.querySelectorAll('[data-char-equip]').forEach(el => {
-        const slot = el.dataset.charEquip;
-        const item = equip[slot] || {};
-        if (!item.名称) return;
-        el.addEventListener('click', e => {
-          e.stopPropagation();
-          toggleInfoPopover(el, buildItemPopoverHtml(item, { slot, fallbackName: '—' }));
-        });
-      });
-
-    } else if (tab === 'profile') {
+    if (tab === 'profile') {
       const b = n.身体信息 || {};
       const skills = n.技能 || {};
       const skillList = sortedEntries(skills);
+      const rank = d.位阶 || '凡人';
       const skillsHtml = skillList.length
-        ? skillList.map(([sname, s], idx) =>
-            `<span class="skill-tag skill-tag-clickable" data-skill-idx="${idx}">${esc(sname)}<span class="lv">Lv.${toNum(s.等级, 1)}</span></span>`
-          ).join('')
+        ? skillList.map(([sname, s], idx) => {
+            const quality = s.品质 || '普通';
+            return `<span class="skill-tag skill-tag-clickable" data-skill-idx="${idx}">
+              ${esc(sname)}
+              <span class="lv" style="color:var(--q-${esc(quality)});">${esc(quality)}</span>
+            </span>`;
+          }).join('')
         : '<span class="skill-tag empty">暂无技能</span>';
+
       content.innerHTML = `
+        <div class="block">
+          <div class="block-title">五维</div>
+          <div class="level-layout">
+            <div class="radar-wrap" style="flex:0 0 160px;width:160px;">${renderRadar(n.五维, rank)}</div>
+            <div class="attr-list">${renderAttrRows(n.五维, rank)}</div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-title">资源</div>
+          ${renderResBar('HP', toNum(n.当前HP,0), toNum(d.hp上限,1), 'fill-hp')}
+          ${renderResBar('MP', toNum(n.当前MP,0), toNum(d.mp上限,1), 'fill-mp')}
+          ${renderResBar('SP', toNum(n.当前SP,0), toNum(d.sp上限,1), 'fill-sp')}
+          ${renderResBar('SAN', toNum(n.当前SAN,0), 100, 'fill-san')}
+          <div class="kv-row" style="margin-top:6px;"><span class="k">护甲</span><span class="v">${toNum(d.护甲总值, 0)}</span></div>
+        </div>
         <div class="block">
           <div class="block-title">外貌</div>
           ${n.外貌
@@ -1676,140 +1905,145 @@ body {
           e.stopPropagation();
           const idx = Number(el.dataset.skillIdx);
           const [sname, s] = skillList[idx];
-          toggleInfoPopover(el, buildSkillPopoverHtml(s, { fallbackName: sname }));
+          toggleInfoPopover(el, buildSkillPopoverHtml(sname, s));
         });
       });
+      return;
+    }
 
-    } else if (tab === 'nsfw') {
-      const sex = nsfw.性经验 || {};
-      const fetishes = nsfw.性癖 || {};
-      const clothes = nsfw.服装状态 || {};
-      const parts = nsfw.身体部位物理状态 || {};
-      const devPoints = nsfw.敏感点开发 || {};
-      const period = nsfw.生理周期 || {};
-
-      let fetishHtml = '';
-      const fetishEntries = sortedEntries(fetishes);
-      if (fetishEntries.length) {
-        fetishHtml = fetishEntries.map(([name, f]) => {
-          const dev = Math.max(0, Math.min(100, toNum(f.开发度, 0)));
-          return `<div class="fetish-card">
-            <div class="fetish-head">
-              <div class="fetish-name">${esc(name)}</div>
-            </div>
-            ${f.细节描述 ? `<div class="fetish-desc">${esc(f.细节描述)}</div>` : ''}
-            <div class="fetish-dev-bar">
-              <span class="label">开发度</span>
-              <div class="track"><div class="fill" style="width:${dev}%"></div></div>
-              <span class="num">${dev}</span>
-            </div>
-          </div>`;
-        }).join('');
-      } else {
-        fetishHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
+    if (tab === 'equip') {
+      const equip = n.装备 || {};
+      const entries = sortedEntries(equip);
+      if (!entries.length) {
+        content.innerHTML = '<div class="empty-tip">未装备任何物品</div>';
+        return;
       }
+      let html = '';
+      entries.forEach(([slot, item]) => {
+        const name = (item && item.名称) || '—';
+        const quality = (item && item.品质) || '普通';
+        const wear = (item && item.穿着状态) || '';
+        html += `<div class="item-card q-${esc(quality)}" data-char-equip-slot="${esc(slot)}">
+          <div class="item-name">
+            <span class="item-slot-tag">${esc(slot)}</span>
+            ${esc(name)}
+            <span class="item-qty" style="background:var(--q-${esc(quality)});color:#fff;">${esc(quality)}</span>
+            ${wear ? `<span class="item-qty">${esc(wear)}</span>` : ''}
+          </div>
+        </div>`;
+      });
+      content.innerHTML = html;
+      content.querySelectorAll('[data-char-equip-slot]').forEach(el => {
+        const slot = el.dataset.charEquipSlot;
+        const item = equip[slot] || {};
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleInfoPopover(el, buildEquipPopoverHtml(item));
+        });
+      });
+      return;
+    }
 
-      const statusClass = (s) => {
-        const t = String(s||'');
-        if (/正常|完好|完整/.test(t)) return 'st-normal';
-        if (/凌乱|半脱|松散|卷起/.test(t)) return 'st-mess';
-        if (/破损|损坏|撕裂/.test(t)) return 'st-damage';
-        if (/脱|褪去|裸/.test(t)) return 'st-off';
-        return 'st-normal';
-      };
-      const clothesHtml = ['上装','下装','内衣','足部','腿部','饰品'].map(slot => {
-        const items = sortedEntries(clothes[slot] || {});
-        const itemsHtml = items.length
-          ? items.map(([cname, info]) =>
-              `<div class="clothes-item">${esc(cname)}<span class="state ${statusClass(info.状态)}">${esc(info.状态||'正常')}</span>${info.描述?`<div style="color:var(--muted);font-size:10.5px;margin-top:2px;">${esc(info.描述)}</div>`:''}</div>`
-            ).join('')
-          : '<div class="clothes-item" style="color:var(--muted-2);">—</div>';
-        return `<div class="clothes-cell"><div class="slot">${esc(slot)}</div>${itemsHtml}</div>`;
-      }).join('');
+    // NSFW
+    const sex = nsfw.性经验 || {};
+    const fetishes = nsfw.性癖 || {};
+    const parts = nsfw.身体部位物理状态 || {};
+    const devPoints = nsfw.敏感点开发 || {};
+    const period = nsfw.生理周期 || {};
 
-      const PART_LIST = ['脸部','手部','胸部','乳头','小穴','后庭','脚部'];
-      const partsHtml = PART_LIST.map(part => {
-        const info = parts[part] || {};
-        const appear = info.外观描述 || '—';
-        const stat = info.当前状态 || '正常';
-        return `<div class="part-row">
-          <div class="part-name">${esc(part)}</div>
-          <div class="part-body">
-            <div class="part-appear">${esc(appear)}</div>
-            <div class="part-status">${esc(stat)}</div>
+    let fetishHtml = '';
+    const fetishEntries = sortedEntries(fetishes);
+    if (fetishEntries.length) {
+      fetishHtml = fetishEntries.map(([name, f]) => {
+        const dev = Math.max(0, Math.min(100, toNum(f.开发度, 0)));
+        return `<div class="fetish-card">
+          <div class="fetish-head"><div class="fetish-name">${esc(name)}</div></div>
+          ${f.细节描述 ? `<div class="fetish-desc">${esc(f.细节描述)}</div>` : ''}
+          <div class="fetish-dev-bar">
+            <span class="label">开发度</span>
+            <div class="track"><div class="fill" style="width:${dev}%"></div></div>
+            <span class="num">${dev}</span>
           </div>
         </div>`;
       }).join('');
-
-      let devHtml = '';
-      const devEntries = sortedEntries(devPoints);
-      if (devEntries.length) {
-        devHtml = devEntries.map(([name, d]) => {
-          const lv = Math.max(0, Math.min(10, toNum(d.敏感等级, 0)));
-          return `<div class="dev-row">
-            <div class="dev-head">
-              <div class="dev-name">${esc(name)}</div>
-              <div class="dev-lv ${lv>=9?'max':''}">Lv.${lv}</div>
-            </div>
-            <div class="dev-body">
-              ${d.生理反应 ? `<div class="react">${esc(d.生理反应)}</div>` : ''}
-              ${d.开发细节 ? `<div class="detail">${esc(d.开发细节)}</div>` : ''}
-            </div>
-          </div>`;
-        }).join('');
-      } else {
-        devHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
-      }
-
-      const phase = period.当前阶段 || '卵泡期';
-      const safeDays = toNum(period.安全期剩余天数, 0);
-      const ovDays = toNum(period.排卵期剩余天数, 0);
-      const periodHtml = `
-        <div class="period-phase phase-${esc(phase)}">${esc(phase)}</div>
-        <div class="period-grid">
-          <div class="period-item"><span class="k">周期长度</span><span class="v">${toNum(period.周期长度,28)} 天</span></div>
-          <div class="period-item"><span class="k">经期长度</span><span class="v">${toNum(period.经期长度,5)} 天</span></div>
-          <div class="period-item"><span class="k">距上次经期</span><span class="v">${toNum(period.距上次经期开始,0)} 天</span></div>
-          <div class="period-item"><span class="k">安全期剩余</span><span class="v">${safeDays} 天</span></div>
-          <div class="period-item"><span class="k">排卵期剩余</span><span class="v">${ovDays} 天</span></div>
-        </div>
-      `;
-
-      content.innerHTML = `
-        <div class="block">
-          <div class="block-title">基础记录</div>
-          <div class="kv-row"><span class="k">性经验</span><span class="v">${toNum(sex.累计次数,0)} 次 · ${toNum(sex.性伴侣人数,0)} 人</span></div>
-          <div class="kv-row"><span class="k">初次对象</span><span class="v">${esc(nsfw.初次性爱对象||'无')}</span></div>
-          <div class="kv-row"><span class="k">最近对象</span><span class="v">${esc(nsfw.最近性爱对象||'无')}</span></div>
-          <div class="kv-row"><span class="k">最近时间</span><span class="v">${esc(nsfw.最近性交时间||'无')}</span></div>
-          <div class="kv-row"><span class="k">最近地点</span><span class="v">${esc(nsfw.最近性交地点||'无')}</span></div>
-          <div class="kv-row"><span class="k">门槛类型</span><span class="v">${esc(nsfw.NSFW门槛类型||'普通型')}</span></div>
-        </div>
-        <div class="block">
-          <div class="block-title">性癖</div>
-          ${fetishHtml}
-        </div>
-        <div class="block">
-          <div class="block-title">服装状态</div>
-          <div class="clothes-grid">${clothesHtml}</div>
-        </div>
-        <div class="block">
-          <div class="block-title">身体部位物理状态</div>
-          ${partsHtml}
-        </div>
-        <div class="block">
-          <div class="block-title">敏感点开发</div>
-          ${devHtml}
-        </div>
-        <div class="block">
-          <div class="block-title">生理周期</div>
-          ${periodHtml}
-        </div>
-      `;
+    } else {
+      fetishHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
     }
+
+    const PART_LIST = ['脸部','手部','胸部','乳头','小穴','后庭','脚部'];
+    const partsHtml = PART_LIST.map(part => {
+      const info = parts[part] || {};
+      return `<div class="part-row">
+        <div class="part-name">${esc(part)}</div>
+        <div class="part-body">
+          <div class="part-appear">${esc(info.外观描述||'—')}</div>
+          <div class="part-status">${esc(info.当前状态||'正常')}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    let devHtml = '';
+    const devEntries = sortedEntries(devPoints);
+    if (devEntries.length) {
+      devHtml = devEntries.map(([name, d2]) => {
+        const lv = Math.max(0, Math.min(10, toNum(d2.敏感等级, 0)));
+        return `<div class="dev-row">
+          <div class="dev-head">
+            <div class="dev-name">${esc(name)}</div>
+            <div class="dev-lv ${lv>=9?'max':''}">Lv.${lv}</div>
+          </div>
+          <div class="dev-body">
+            ${d2.生理反应 ? `<div class="react">${esc(d2.生理反应)}</div>` : ''}
+            ${d2.开发细节 ? `<div class="detail">${esc(d2.开发细节)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      devHtml = '<div class="kv-row"><span class="v" style="color:var(--muted);">—</span></div>';
+    }
+
+    const phase = period.当前阶段 || '卵泡期';
+    const periodHtml = `
+      <div class="period-phase phase-${esc(phase)}">${esc(phase)}</div>
+      <div class="period-grid">
+        <div class="period-item"><span class="k">周期长度</span><span class="v">${toNum(period.周期长度,28)} 天</span></div>
+        <div class="period-item"><span class="k">经期长度</span><span class="v">${toNum(period.经期长度,5)} 天</span></div>
+        <div class="period-item"><span class="k">距上次经期</span><span class="v">${toNum(period.距上次经期开始,0)} 天</span></div>
+        <div class="period-item"><span class="k">安全期剩余</span><span class="v">${toNum(period.安全期剩余天数,0)} 天</span></div>
+        <div class="period-item"><span class="k">排卵期剩余</span><span class="v">${toNum(period.排卵期剩余天数,0)} 天</span></div>
+      </div>
+    `;
+
+    content.innerHTML = `
+      <div class="block">
+        <div class="block-title">基础记录</div>
+        <div class="kv-row"><span class="k">性经验</span><span class="v">${toNum(sex.累计次数,0)} 次 · ${toNum(sex.性伴侣人数,0)} 人</span></div>
+        <div class="kv-row"><span class="k">初次对象</span><span class="v">${esc(nsfw.初次性爱对象||'无')}</span></div>
+        <div class="kv-row"><span class="k">最近对象</span><span class="v">${esc(nsfw.最近性爱对象||'无')}</span></div>
+        <div class="kv-row"><span class="k">最近时间</span><span class="v">${esc(nsfw.最近性交时间||'无')}</span></div>
+        <div class="kv-row"><span class="k">最近地点</span><span class="v">${esc(nsfw.最近性交地点||'无')}</span></div>
+        <div class="kv-row"><span class="k">门槛类型</span><span class="v">${esc(nsfw.NSFW门槛类型||'普通型')}</span></div>
+      </div>
+      <div class="block">
+        <div class="block-title">性癖</div>
+        ${fetishHtml}
+      </div>
+      <div class="block">
+        <div class="block-title">身体部位物理状态</div>
+        ${partsHtml}
+      </div>
+      <div class="block">
+        <div class="block-title">敏感点开发</div>
+        ${devHtml}
+      </div>
+      <div class="block">
+        <div class="block-title">生理周期</div>
+        ${periodHtml}
+      </div>
+    `;
   }
 
-  // ===== 任务 =====
+  // 任务
   function openTaskModal() {
     const body = document.getElementById('task-body');
     const core = getVar('任务.核心目标', {});
@@ -1858,9 +2092,7 @@ body {
       html += `<div class="section-title" style="margin-top:16px;">日常任务</div>`;
       dailyEntries.forEach(([name, t]) => {
         html += `<div class="quest-card odd">
-          <div class="quest-head">
-            <div class="quest-name">${esc(name)}</div>
-          </div>
+          <div class="quest-head"><div class="quest-name">${esc(name)}</div></div>
           ${t.描述?`<div class="kv-row"><span class="k">描述</span><span class="v">${esc(t.描述)}</span></div>`:''}
           ${t.奖励?`<div class="kv-row"><span class="k">奖励</span><span class="v">${esc(t.奖励)}</span></div>`:''}
         </div>`;
@@ -1872,7 +2104,7 @@ body {
     document.getElementById('mask-task').classList.add('show');
   }
 
-  // ===== 建筑 =====
+  // 建筑
   function openBuildingModal() {
     const body = document.getElementById('building-body');
     const entries = sortedEntries(getVar('建筑', {}));
@@ -1881,32 +2113,23 @@ body {
       document.getElementById('mask-building').classList.add('show');
       return;
     }
-    const groups = { '居所': [], '功能建筑': [] };
-    entries.forEach(e => {
-      const type = e[1].类型 || '功能建筑';
-      (groups[type] = groups[type] || []).push(e);
-    });
     let html = '';
-    Object.keys(groups).forEach(type => {
-      if (!groups[type].length) return;
-      html += `<div class="section-title">${esc(type)}</div>`;
-      groups[type].forEach(([name, b]) => {
-        html += `<div class="building-card">
-          <div class="building-name">${esc(name)}</div>
-          ${b.描述?`<div class="building-desc">${esc(b.描述)}</div>`:''}
-        </div>`;
-      });
+    entries.forEach(([name, b]) => {
+      const triggered = b.本休息期已触发 ? '本休息期已触发' : '';
+      html += `<div class="building-card">
+        <div class="building-name">${esc(name)}${triggered ? `<span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;">${esc(triggered)}</span>` : ''}</div>
+        ${b.叙事倾向?`<div class="building-desc">${esc(b.叙事倾向)}</div>`:''}
+      </div>`;
     });
     body.innerHTML = html;
     document.getElementById('mask-building').classList.add('show');
   }
 
-  // ===== 历史 =====
+  // 历史
   function openHistoryModal() {
     const body = document.getElementById('history-body');
     const planes = getVar('历史.已完成位面', {});
     const titles = getVar('历史.称号', {});
-
     let html = '';
 
     const planeEntries = sortedEntries(planes);
@@ -1914,10 +2137,9 @@ body {
       html += `<div class="section-title">已完成位面</div>`;
       html += `<div class="timeline">`;
       planeEntries.forEach(([name, info], i) => {
-        const summary = info.总结 || '';
         html += `<div class="timeline-item">
           <div class="tl-name">${String(i+1).padStart(2,'0')} · ${esc(name)}</div>
-          ${summary ? `<div class="tl-summary">${esc(summary)}</div>` : ''}
+          ${info.总结 ? `<div class="tl-summary">${esc(info.总结)}</div>` : ''}
         </div>`;
       });
       html += `</div>`;
@@ -1939,7 +2161,7 @@ body {
     document.getElementById('mask-history').classList.add('show');
   }
 
-  // ===== 事件 =====
+  // 事件绑定
   function bindEvents() {
     document.getElementById('entry-reincarnator').addEventListener('click', openReincarnatorDetail);
     document.getElementById('entry-char').addEventListener('click', openCharList);
@@ -1969,19 +2191,37 @@ body {
     renderWorldbar();
     renderReincarnatorCard();
   }
+  window.__towerRefresh = updateUI;
 
   function init() {
     bindEvents();
     updateUI();
+
+    // 首次重算
+    try {
+      if (window.Mvu && typeof window.__towerRecalc === 'function') {
+        window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
+      }
+    } catch(e) { console.warn('[tower] initial recalc failed', e); }
+
+    // 事件监听
     let subscribed = false;
     try {
       if (typeof eventOn === 'function' && window.Mvu && Mvu.events) {
-        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, updateUI);
+        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, (mvuData) => {
+          if (typeof window.__towerRecalc === 'function') {
+            window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
+          }
+          updateUI();
+        });
         subscribed = true;
       }
     } catch(e) {}
     if (!subscribed) {
-      setInterval(updateUI, 2000);
+      setInterval(() => {
+        if (typeof window.__towerRecalc === 'function') window.__towerRecalc().catch(()=>{});
+        updateUI();
+      }, 2000);
     }
   }
 
