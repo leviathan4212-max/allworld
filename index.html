@@ -921,6 +921,132 @@ body {
   height: 100%; background: linear-gradient(90deg, var(--gold-light), var(--gold));
 }
 
+/* ===== 加点按钮 ===== */
+.attr-btn-group {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.attr-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid var(--gold-light);
+  background: linear-gradient(135deg, #faf7f1, #ede6d6);
+  color: var(--gold-deep);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: 'Georgia', serif;
+}
+.attr-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #f5ecd8, #e8d9b8);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(184,147,90,0.25);
+}
+.attr-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: rgba(255,255,255,0.5);
+}
+.attr-btn.attr-plus:hover:not(:disabled) {
+  color: var(--q-精良);
+  border-color: var(--q-精良);
+}
+.attr-btn.attr-minus:hover:not(:disabled) {
+  color: var(--res-hp);
+  border-color: var(--res-hp);
+}
+.attr-row .delta {
+  display: inline-block;
+  margin-left: 3px;
+  color: var(--q-精良);
+  font-size: 9.5px;
+  font-weight: 700;
+  font-family: 'Georgia', monospace;
+}
+
+/* ===== 加点确认条 ===== */
+.attr-confirm-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(224,192,136,0.1);
+  border: 1px dashed var(--gold-light);
+  border-radius: 3px;
+  flex-wrap: wrap;
+}
+.attr-confirm-info {
+  display: flex;
+  gap: 14px;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: 'Georgia', 'Noto Serif SC', serif;
+  letter-spacing: 0.5px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.attr-confirm-info strong {
+  color: var(--gold-deep);
+  font-weight: 700;
+  font-family: 'Georgia', monospace;
+  font-size: 12.5px;
+  margin-left: 2px;
+}
+.attr-confirm-info .used strong { color: var(--q-精良); }
+.attr-confirm-info .remain strong { color: var(--q-传说); }
+.attr-confirm-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.attr-confirm-reset,
+.attr-confirm-ok {
+  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Georgia', 'Noto Serif SC', serif;
+}
+.attr-confirm-reset {
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+}
+.attr-confirm-reset:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+  background: rgba(224,192,136,0.08);
+}
+.attr-confirm-ok {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: 1px solid var(--gold-dark);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+}
+.attr-confirm-ok:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184,147,90,0.35);
+}
+.attr-confirm-ok:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .lv-display {
   display: flex; align-items: baseline; gap: 12px;
   margin-bottom: 14px;
@@ -1040,7 +1166,6 @@ body {
 (function() {
   'use strict';
 
-  // ===== 公共数据读写 =====
   async function tryGetVariables() {
     const TH = window.TavernHelper;
     if (!TH || typeof TH.getVariables !== 'function') return null;
@@ -1056,7 +1181,7 @@ body {
         if (v && typeof v.then === 'function') v = await v;
         if (v && v.stat_data) return v.stat_data;
         if (v && (v.轮回者 || v.世界 || v.角色)) return v;
-      } catch(e) { /* 继续下一个 */ }
+      } catch(e) { /* 继续 */ }
     }
     return null;
   }
@@ -1106,8 +1231,8 @@ body {
   window.__tower_read = readStat;
   window.__tower_write = writeStat;
   window.__tower_cached_stat = null;
+  window.__tower_attrPreview = null;
 
-  // ===== 派生计算 =====
   function toNum(v, def) {
     const n = Number(v);
     return Number.isFinite(n) ? n : (def ?? 0);
@@ -1192,7 +1317,7 @@ body {
     const ok = await writeStat(newStat);
     window.__tower_cached_stat = newStat;
     if (ok) console.log('[tower] _派生 已重算写回');
-    else console.warn('[tower] _派生 重算完成，但写回失败；面板仍用本地计算值显示');
+    else console.warn('[tower] _派生 重算完成，但写回失败');
   }
 
   window.__towerRecalc = recalcAll;
@@ -1396,7 +1521,6 @@ body {
     return head + body;
   }
 
-  // 世界条
   function renderWorldbar() {
     const era    = getVar('世界.纪元', '—');
     const plane  = getVar('世界.当前位面', '高塔');
@@ -1443,7 +1567,6 @@ body {
     </div>`;
   }
 
-  // 雷达图
   function renderRadar(五维, 位阶) {
     const attrs = ['力量','敏捷','体质','智力','精神'];
     const max = RANK_MAX[位阶] || 8;
@@ -1509,7 +1632,6 @@ body {
     }).join('');
   }
 
-  // 概览卡
   function renderReincarnatorCard() {
     const info = getVar('轮回者', {});
     const derived = info._派生 || {};
@@ -1561,8 +1683,8 @@ body {
     `;
   }
 
-  // 轮回者详情
   function openReincarnatorDetail() {
+    window.__tower_attrPreview = null;   // 打开时清空预览
     renderReincarnatorTab('level');
     document.getElementById('mask-reincarnator').classList.add('show');
   }
@@ -1579,7 +1701,12 @@ body {
       <div id="reincarnator-tab-content"></div>
     `;
     body.querySelectorAll('[data-reincarnator-tab]').forEach(el => {
-      el.addEventListener('click', () => renderReincarnatorTab(el.dataset.reincarnatorTab));
+      el.addEventListener('click', () => {
+        if (el.dataset.reincarnatorTab !== 'level') {
+          window.__tower_attrPreview = null;   // 切走别的 tab 时清空预览
+        }
+        renderReincarnatorTab(el.dataset.reincarnatorTab);
+      });
     });
 
     const content = document.getElementById('reincarnator-tab-content');
@@ -1593,6 +1720,56 @@ body {
       const threshold = lv * 20;
       const expPct = Math.min(100, Math.round(expCur / threshold * 100));
       const fp = toNum(info.自由点, 0);
+      const maxAttr = RANK_MAX[rank] || 8;
+
+      const keys = ['力量','敏捷','体质','智力','精神'];
+      const baseAttrs = {};
+      keys.forEach(k => baseAttrs[k] = toNum(info.五维?.[k], 1));
+
+      const preview = window.__tower_attrPreview;
+      const displayAttr = preview ? { ...preview } : { ...baseAttrs };
+      const used = preview ? keys.reduce((s, k) => s + (displayAttr[k] - baseAttrs[k]), 0) : 0;
+      const remaining = fp - used;
+
+      let attrRowsHtml = '';
+      keys.forEach(k => {
+        const v = displayAttr[k];
+        const pct = Math.round(v / maxAttr * 100);
+        const delta = v - baseAttrs[k];
+        const canPlus = fp > 0 && remaining > 0 && v < maxAttr;
+        const canMinus = fp > 0 && delta > 0;
+        const btns = fp > 0 ? `
+          <span class="attr-btn-group">
+            <button type="button" class="attr-btn attr-minus" data-attr-minus="${k}" ${canMinus ? '' : 'disabled'} title="撤回 1 点">−</button>
+            <button type="button" class="attr-btn attr-plus" data-attr-plus="${k}" ${canPlus ? '' : 'disabled'} title="加 1 点">+</button>
+          </span>
+        ` : '';
+        attrRowsHtml += `<div class="attr-row">
+          <span class="name">${k}</span>
+          <span class="num">${v}${delta > 0 ? `<span class="delta">+${delta}</span>` : ''}</span>
+          <span class="max">/${maxAttr}</span>
+          <div class="attr-track"><div class="attr-fill" style="width:${pct}%"></div></div>
+          ${btns}
+        </div>`;
+      });
+
+      let confirmHtml = '';
+      if (fp > 0) {
+        const canConfirm = used > 0 && remaining >= 0;
+        confirmHtml = `
+          <div class="attr-confirm-bar">
+            <div class="attr-confirm-info">
+              <span>自由点 <strong>${fp}</strong></span>
+              ${used > 0 ? `<span class="used">已分配 <strong>${used}</strong></span>` : ''}
+              ${used > 0 ? `<span class="remain">剩余 <strong>${remaining}</strong></span>` : ''}
+            </div>
+            <div class="attr-confirm-btns">
+              ${used > 0 ? `<button type="button" class="attr-confirm-reset" data-attr-reset="1">重置</button>` : ''}
+              <button type="button" class="attr-confirm-ok" data-attr-confirm="1" ${canConfirm ? '' : 'disabled'}>确认加点</button>
+            </div>
+          </div>
+        `;
+      }
 
       let html = `
         <div class="lv-display">
@@ -1611,12 +1788,120 @@ body {
         <div class="block">
           <div class="block-title">五维</div>
           <div class="level-layout">
-            <div class="radar-wrap">${renderRadar(info.五维, rank)}</div>
-            <div class="attr-list">${renderAttrRows(info.五维, rank)}</div>
+            <div class="radar-wrap">${renderRadar(displayAttr, rank)}</div>
+            <div class="attr-list">${attrRowsHtml}</div>
           </div>
+          ${confirmHtml}
         </div>
       `;
       content.innerHTML = html;
+
+      // + 按钮
+      content.querySelectorAll('[data-attr-plus]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const k = el.dataset.attrPlus;
+          if (!window.__tower_attrPreview) {
+            window.__tower_attrPreview = { ...baseAttrs };
+          }
+          const p = window.__tower_attrPreview;
+          const curUsed = keys.reduce((s, kk) => s + (p[kk] - baseAttrs[kk]), 0);
+          if (p[k] >= maxAttr) return;
+          if (curUsed >= fp) return;
+          p[k]++;
+          renderReincarnatorTab('level');
+        });
+      });
+
+      // − 按钮（撤回本次加点）
+      content.querySelectorAll('[data-attr-minus]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const k = el.dataset.attrMinus;
+          if (!window.__tower_attrPreview) return;
+          const p = window.__tower_attrPreview;
+          if (p[k] <= baseAttrs[k]) return;
+          p[k]--;
+          const anyDelta = keys.some(kk => p[kk] > baseAttrs[kk]);
+          if (!anyDelta) window.__tower_attrPreview = null;
+          renderReincarnatorTab('level');
+        });
+      });
+
+      // 重置
+      content.querySelectorAll('[data-attr-reset]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          window.__tower_attrPreview = null;
+          renderReincarnatorTab('level');
+        });
+      });
+
+      // 确认
+      content.querySelectorAll('[data-attr-confirm]').forEach(el => {
+        el.addEventListener('click', async e => {
+          e.stopPropagation();
+          if (!window.__tower_attrPreview) return;
+          const p = window.__tower_attrPreview;
+          const deltaSum = keys.reduce((s, kk) => s + (p[kk] - baseAttrs[kk]), 0);
+          if (deltaSum <= 0) return;
+
+          el.disabled = true;
+          el.textContent = '写入中…';
+
+          try {
+            const stat = await window.__tower_read();
+            if (!stat) throw new Error('读取变量失败');
+
+            // 一致性校验（防止玩家预览时外部也改了）
+            const latestFp = toNum(stat.轮回者?.自由点, 0);
+            const latestAttr = stat.轮回者?.五维 || {};
+            for (const k of keys) {
+              if (toNum(latestAttr[k], 1) !== baseAttrs[k]) {
+                throw new Error('属性已被外部修改，请关闭面板重新打开');
+              }
+            }
+            if (latestFp !== fp) {
+              throw new Error('自由点已被外部修改，请关闭面板重新打开');
+            }
+            if (deltaSum > latestFp) {
+              throw new Error('自由点不足');
+            }
+
+            _.set(stat, '轮回者.五维', p);
+            _.set(stat, '轮回者.自由点', latestFp - deltaSum);
+            await window.__tower_write(stat);
+            await window.__towerRecalc();
+            await window.__towerRefresh();
+
+            window.__tower_attrPreview = null;
+
+            try {
+              if (window.toastr && typeof toastr.success === 'function') {
+                toastr.success(`已分配 ${deltaSum} 点自由属性`);
+              } else {
+                console.log(`[tower] 已分配 ${deltaSum} 点自由属性`);
+              }
+            } catch(_) {}
+
+            renderReincarnatorTab('level');
+          } catch (err) {
+            console.error('[tower] 确认加点失败', err);
+            el.disabled = false;
+            el.textContent = '确认加点';
+            try {
+              if (window.toastr && typeof toastr.error === 'function') {
+                toastr.error(err.message || '加点失败');
+              } else {
+                alert(err.message || '加点失败');
+              }
+            } catch(_) {
+              alert(err.message || '加点失败');
+            }
+          }
+        });
+      });
+
       return;
     }
 
@@ -1725,7 +2010,6 @@ body {
     });
   }
 
-  // 角色列表
   function openCharList() {
     const body = document.getElementById('char-list-body');
     const entries = sortedEntries(getVar('角色', {}));
@@ -1773,7 +2057,6 @@ body {
     document.getElementById('mask-char-list').classList.add('show');
   }
 
-  // 角色详情
   function openCharDetail(key) {
     const allChars = getVar('角色', {});
     const c = allChars[key] || {};
@@ -1989,7 +2272,6 @@ body {
       return;
     }
 
-    // NSFW
     const sex = nsfw.性经验 || {};
     const fetishes = nsfw.性癖 || {};
     const parts = nsfw.身体部位物理状态 || {};
@@ -2088,7 +2370,6 @@ body {
     `;
   }
 
-  // 任务
   function openTaskModal() {
     const body = document.getElementById('task-body');
     const core = getVar('任务.核心目标', {});
@@ -2149,7 +2430,6 @@ body {
     document.getElementById('mask-task').classList.add('show');
   }
 
-  // 建筑
   function openBuildingModal() {
     const body = document.getElementById('building-body');
     const entries = sortedEntries(getVar('建筑', {}));
@@ -2170,7 +2450,6 @@ body {
     document.getElementById('mask-building').classList.add('show');
   }
 
-  // 历史
   function openHistoryModal() {
     const body = document.getElementById('history-body');
     const planes = getVar('历史.已完成位面', {});
@@ -2206,7 +2485,6 @@ body {
     document.getElementById('mask-history').classList.add('show');
   }
 
-  // 事件绑定
   function bindEvents() {
     document.getElementById('entry-reincarnator').addEventListener('click', openReincarnatorDetail);
     document.getElementById('entry-char').addEventListener('click', openCharList);
@@ -2240,41 +2518,35 @@ body {
   }
   window.__towerRefresh = updateUI;
 
-function init() {
-  bindEvents();
-  updateUI();
+  function init() {
+    bindEvents();
+    updateUI();
 
-  try {
-    if (window.__towerRecalc) {
-      window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
-    }
-  } catch(e) { console.warn('[tower] initial recalc failed', e); }
-
-  // 1) 事件订阅（AI 真实更新时立即响应）
-  let eventOk = false;
-  try {
-    const evt = window.Mvu?.events?.VARIABLE_UPDATE_ENDED;
-    if (typeof eventOn === 'function' && evt !== undefined) {
-      eventOn(evt, () => {
-        if (window.__towerRecalc) window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
-        updateUI();
-      });
-      eventOk = true;
-      console.log('[tower] ✓ 已订阅 VARIABLE_UPDATE_ENDED');
-    } else {
-      console.warn('[tower] 事件订阅不可用 (eventOn=' + typeof eventOn + ', evt=' + evt + ')');
-    }
-  } catch(e) { console.warn('[tower] eventOn failed', e); }
-
-  // 2) 轮询兜底 —— 无论事件订阅成败都启动
-  setInterval(async () => {
     try {
-      if (window.__towerRecalc) await window.__towerRecalc();
-      await updateUI();
-    } catch(e) {}
-  }, 1500);
-  console.log('[tower] ✓ 轮询兜底已启动（1.5s）' + (eventOk ? '，事件订阅已生效' : '，仅靠轮询'));
-}
+      if (window.__towerRecalc) {
+        window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
+      }
+    } catch(e) { console.warn('[tower] initial recalc failed', e); }
+
+    // 事件订阅（如可用）
+    try {
+      const evt = window.Mvu?.events?.VARIABLE_UPDATE_ENDED;
+      if (typeof eventOn === 'function' && evt !== undefined) {
+        eventOn(evt, () => {
+          if (window.__towerRecalc) window.__towerRecalc().catch(() => {});
+          updateUI();
+        });
+      }
+    } catch(e) { /* 忽略 */ }
+
+    // 轮询兜底
+    setInterval(async () => {
+      try {
+        if (window.__towerRecalc) await window.__towerRecalc();
+        await updateUI();
+      } catch(e) {}
+    }, 1500);
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
