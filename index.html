@@ -1035,16 +1035,83 @@ body {
 
 <script>
 /* ============================================================
-   计算层：监听 MVU 更新，重算 _派生 并整体写回
+   计算层 + 数据读写层
    ============================================================ */
 (function() {
   'use strict';
 
+  // ===== 公共数据读写 =====
+  async function tryGetVariables() {
+    const TH = window.TavernHelper;
+    if (!TH || typeof TH.getVariables !== 'function') return null;
+    const argsList = [
+      { type: 'message', message_id: 'latest' },
+      { type: 'message' },
+      { type: 'chat', message_id: 'latest' },
+      { type: 'chat' },
+    ];
+    for (const args of argsList) {
+      try {
+        let v = TH.getVariables(args);
+        if (v && typeof v.then === 'function') v = await v;
+        if (v && v.stat_data) return v.stat_data;
+        if (v && (v.轮回者 || v.世界 || v.角色)) return v;
+      } catch(e) { /* 继续下一个 */ }
+    }
+    return null;
+  }
+
+  async function tryMvuGet() {
+    const M = window.Mvu;
+    if (!M || typeof M.getMvuData !== 'function') return null;
+    try {
+      let d = M.getMvuData({ type: 'message', message_id: 'latest' });
+      if (d && typeof d.then === 'function') d = await d;
+      if (d && d.stat_data) return d.stat_data;
+    } catch(e) { /* 继续 */ }
+    return null;
+  }
+
+  async function readStat() {
+    let s = await tryGetVariables();
+    if (s) return s;
+    return await tryMvuGet();
+  }
+
+  async function writeStat(stat) {
+    const M = window.Mvu;
+    const TH = window.TavernHelper;
+
+    if (M && typeof M.replaceMvuData === 'function') {
+      try {
+        await M.replaceMvuData({ stat_data: stat }, { type: 'message', message_id: 'latest' });
+        return true;
+      } catch(e) { console.warn('[tower] Mvu.replaceMvuData failed', e); }
+    }
+    if (TH && typeof TH.replaceVariables === 'function') {
+      try {
+        await TH.replaceVariables({ stat_data: stat }, { type: 'message', message_id: 'latest' });
+        return true;
+      } catch(e) { console.warn('[tower] TH.replaceVariables failed', e); }
+    }
+    if (TH && typeof TH.insertOrAssignVariables === 'function') {
+      try {
+        await TH.insertOrAssignVariables({ stat_data: stat }, { type: 'message', message_id: 'latest' });
+        return true;
+      } catch(e) { console.warn('[tower] TH.insertOrAssignVariables failed', e); }
+    }
+    return false;
+  }
+
+  window.__tower_read = readStat;
+  window.__tower_write = writeStat;
+  window.__tower_cached_stat = null;
+
+  // ===== 派生计算 =====
   function toNum(v, def) {
     const n = Number(v);
     return Number.isFinite(n) ? n : (def ?? 0);
   }
-
   function rankByLv(lv) {
     if (lv <= 15) return '凡人';
     if (lv <= 30) return '精锐';
@@ -1053,13 +1120,11 @@ body {
     if (lv <= 100) return '半神';
     return '神祇';
   }
-
   function hpMaxByCon(con) {
     if (con <= 30) return 150 * con;
     if (con <= 60) return 4500 + 100 * (con - 30);
     return 7500 + 60 * (con - 60);
   }
-
   function computeDerived(五维, 装备) {
     const str = Math.max(1, Math.floor(toNum(五维?.力量, 1)));
     const agi = Math.max(1, Math.floor(toNum(五维?.敏捷, 1)));
@@ -1088,60 +1153,46 @@ body {
       },
     };
   }
-
   function derivedChanged(a, b) {
     if (!a || !b) return true;
     return JSON.stringify(a) !== JSON.stringify(b);
   }
 
   async function recalcAll() {
-    if (!window.Mvu) return;
-    try { await waitGlobalInitialized('Mvu'); } catch(e) { /* 兼容没有该 API 的环境 */ }
-    if (!window.Mvu) return;
+    const stat = await readStat();
+    if (!stat) {
+      console.warn('[tower] 读不到 stat_data，跳过重算');
+      return;
+    }
 
-    let mvuData = null;
-    try {
-      if (typeof Mvu.getCurrentMvuData === 'function') mvuData = Mvu.getCurrentMvuData();
-    } catch(e) { console.warn('[tower] get mvu data failed', e); return; }
-    if (!mvuData || !mvuData.stat_data) return;
-    if (typeof Mvu.replaceMvuData !== 'function') return;
-
-    const stat = mvuData.stat_data;
     let dirty = false;
+    const newStat = _.cloneDeep(stat);
 
-    // 轮回者
-    if (stat.轮回者 && stat.轮回者.五维) {
-      const d = computeDerived(stat.轮回者.五维, stat.轮回者.当前装备);
-      if (derivedChanged(d, stat.轮回者._派生)) {
-        _.set(mvuData, 'stat_data.轮回者._派生', d);
+    if (newStat.轮回者 && newStat.轮回者.五维) {
+      const d = computeDerived(newStat.轮回者.五维, newStat.轮回者.当前装备);
+      if (derivedChanged(d, newStat.轮回者._派生)) {
+        _.set(newStat, '轮回者._派生', d);
         dirty = true;
       }
     }
-
-    // 角色
-    const 角色 = stat.角色 || {};
-    for (const [name, c] of Object.entries(角色)) {
+    for (const [name, c] of Object.entries(newStat.角色 || {})) {
       if (!c || !c.普通 || !c.普通.五维) continue;
       const d = computeDerived(c.普通.五维, c.普通.装备);
       if (derivedChanged(d, c._派生)) {
-        _.set(mvuData, `stat_data.角色.${name}._派生`, d);
+        _.set(newStat, `角色.${name}._派生`, d);
         dirty = true;
       }
     }
 
-    if (!dirty) return;
+    if (!dirty) {
+      window.__tower_cached_stat = newStat;
+      return;
+    }
 
-    // 一次性整体写回
-    try {
-      let mid = -1;
-      if (typeof getCurrentMessageId === 'function') mid = getCurrentMessageId();
-      if (mid < 0 && window.SillyTavern && Array.isArray(SillyTavern.chat)) {
-        mid = SillyTavern.chat.length - 1;
-      }
-      if (mid >= 0) {
-        await Mvu.replaceMvuData(mvuData, { type: 'message', message_id: mid });
-      }
-    } catch(e) { console.warn('[tower] replaceMvuData failed', e); }
+    const ok = await writeStat(newStat);
+    window.__tower_cached_stat = newStat;
+    if (ok) console.log('[tower] _派生 已重算写回');
+    else console.warn('[tower] _派生 重算完成，但写回失败；面板仍用本地计算值显示');
   }
 
   window.__towerRecalc = recalcAll;
@@ -1149,7 +1200,7 @@ body {
 
 
 /* ============================================================
-   展示层：读取 stat_data 渲染
+   展示层
    ============================================================ */
 (function() {
   'use strict';
@@ -1157,13 +1208,7 @@ body {
   const RANK_MAX = { '凡人': 8, '精锐': 18, '勇者': 30, '英雄': 45, '半神': 60, '神祇': 90 };
 
   function getVariables() {
-    try {
-      if (typeof getAllVariables === 'function') {
-        const all = getAllVariables();
-        if (all && Object.keys(all).length) return all.stat_data || all;
-      }
-    } catch(e) {}
-    return {};
+    return window.__tower_cached_stat || {};
   }
   function getVar(path, def) {
     try {
@@ -2187,7 +2232,9 @@ body {
     });
   }
 
-  function updateUI() {
+  async function updateUI() {
+    const stat = await window.__tower_read();
+    if (stat) window.__tower_cached_stat = stat;
     renderWorldbar();
     renderReincarnatorCard();
   }
@@ -2197,29 +2244,27 @@ body {
     bindEvents();
     updateUI();
 
-    // 首次重算
     try {
-      if (window.Mvu && typeof window.__towerRecalc === 'function') {
+      if (window.__towerRecalc) {
         window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
       }
     } catch(e) { console.warn('[tower] initial recalc failed', e); }
 
-    // 事件监听
     let subscribed = false;
     try {
       if (typeof eventOn === 'function' && window.Mvu && Mvu.events) {
-        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, (mvuData) => {
-          if (typeof window.__towerRecalc === 'function') {
-            window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
-          }
+        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, () => {
+          if (window.__towerRecalc) window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
           updateUI();
         });
         subscribed = true;
       }
-    } catch(e) {}
+    } catch(e) { console.warn('[tower] eventOn failed', e); }
+
     if (!subscribed) {
+      console.warn('[tower] 事件订阅失败，使用 2 秒轮询');
       setInterval(() => {
-        if (typeof window.__towerRecalc === 'function') window.__towerRecalc().catch(()=>{});
+        if (window.__towerRecalc) window.__towerRecalc().catch(()=>{});
         updateUI();
       }, 2000);
     }
