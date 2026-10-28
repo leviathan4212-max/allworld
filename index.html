@@ -2240,35 +2240,41 @@ body {
   }
   window.__towerRefresh = updateUI;
 
-  function init() {
-    bindEvents();
-    updateUI();
+function init() {
+  bindEvents();
+  updateUI();
 
-    try {
-      if (window.__towerRecalc) {
-        window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
-      }
-    } catch(e) { console.warn('[tower] initial recalc failed', e); }
-
-    let subscribed = false;
-    try {
-      if (typeof eventOn === 'function' && window.Mvu && Mvu.events) {
-        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, () => {
-          if (window.__towerRecalc) window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
-          updateUI();
-        });
-        subscribed = true;
-      }
-    } catch(e) { console.warn('[tower] eventOn failed', e); }
-
-    if (!subscribed) {
-      console.warn('[tower] 事件订阅失败，使用 2 秒轮询');
-      setInterval(() => {
-        if (window.__towerRecalc) window.__towerRecalc().catch(()=>{});
-        updateUI();
-      }, 2000);
+  try {
+    if (window.__towerRecalc) {
+      window.__towerRecalc().catch(e => console.warn('[tower] initial recalc failed', e));
     }
-  }
+  } catch(e) { console.warn('[tower] initial recalc failed', e); }
+
+  // 1) 事件订阅（AI 真实更新时立即响应）
+  let eventOk = false;
+  try {
+    const evt = window.Mvu?.events?.VARIABLE_UPDATE_ENDED;
+    if (typeof eventOn === 'function' && evt !== undefined) {
+      eventOn(evt, () => {
+        if (window.__towerRecalc) window.__towerRecalc().catch(e => console.warn('[tower] recalc failed', e));
+        updateUI();
+      });
+      eventOk = true;
+      console.log('[tower] ✓ 已订阅 VARIABLE_UPDATE_ENDED');
+    } else {
+      console.warn('[tower] 事件订阅不可用 (eventOn=' + typeof eventOn + ', evt=' + evt + ')');
+    }
+  } catch(e) { console.warn('[tower] eventOn failed', e); }
+
+  // 2) 轮询兜底 —— 无论事件订阅成败都启动
+  setInterval(async () => {
+    try {
+      if (window.__towerRecalc) await window.__towerRecalc();
+      await updateUI();
+    } catch(e) {}
+  }, 1500);
+  console.log('[tower] ✓ 轮询兜底已启动（1.5s）' + (eventOk ? '，事件订阅已生效' : '，仅靠轮询'));
+}
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
