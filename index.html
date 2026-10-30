@@ -39,6 +39,9 @@
   --res-mp: #4a7a9b;
   --res-sp: #6b9b5c;
   --res-san: #8a6da5;
+  --sex-male:   #5d8290;
+  --sex-female: #b85d7d;
+  --sex-other:  #8a6da5;
 }
 .marble {
   background-color: var(--marble-base);
@@ -96,6 +99,7 @@ body {
   letter-spacing: 1px; display: flex; flex-wrap: wrap; align-items: center;
   border-bottom: 1px solid var(--gold-dark); position: relative;
   font-family: 'Georgia','Noto Serif SC',serif;
+  gap: 4px 0;
 }
 #worldbar::after {
   content: ''; position: absolute; bottom: -3px; left: 0; right: 0; height: 1px;
@@ -111,6 +115,26 @@ body {
   transform: translateY(-50%);
 }
 .world-item.rest { color: #f0c896; }
+
+.news-entry-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--gold-dark);
+  color: var(--gold-light);
+  width: 26px; height: 26px;
+  border-radius: 3px; cursor: pointer;
+  font-size: 14px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+.news-entry-btn:hover {
+  border-color: var(--gold);
+  background: rgba(224,192,136,0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
 
 #main { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 
@@ -216,11 +240,24 @@ body {
 }
 .reincarnator-row .value .currency .num { font-weight: 700; font-size: 13px; }
 
-#entries { display: flex; gap: 8px; }
+.sex-sym {
+  display: inline-block;
+  margin-left: 4px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  font-weight: 700;
+  font-size: 13px;
+  vertical-align: middle;
+  line-height: 1;
+}
+.sex-sym.male   { color: var(--sex-male); }
+.sex-sym.female { color: var(--sex-female); }
+.sex-sym.other  { color: var(--sex-other); }
+
+#entries { display: flex; gap: 6px; }
 .entry-btn {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  gap: 6px; padding: 15px 4px; text-align: center;
-  font-weight: 700; font-size: 12.5px; letter-spacing: 2px;
+  gap: 4px; padding: 15px 2px; text-align: center;
+  font-weight: 700; font-size: 12px; letter-spacing: 1px;
   border-radius: 3px; cursor: pointer; user-select: none;
   color: var(--gold-deep);
   background-color: var(--marble-1);
@@ -235,7 +272,7 @@ body {
   transition: all 0.2s ease;
   font-family: 'Georgia','Noto Serif SC',serif;
 }
-.entry-btn .ico { font-size: 14px; opacity: 0.85; }
+.entry-btn .ico { font-size: 13px; opacity: 0.85; }
 .entry-btn:hover {
   border-color: var(--gold-dark); color: var(--gold-dark);
   box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 4px 12px rgba(184,147,90,0.28);
@@ -299,8 +336,8 @@ body {
 
 .tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .tab {
-  padding: 8px 16px; font-size: 12px; cursor: pointer; color: var(--muted);
-  letter-spacing: 1.5px; transition: all 0.15s; position: relative;
+  padding: 8px 14px; font-size: 12px; cursor: pointer; color: var(--muted);
+  letter-spacing: 1.2px; transition: all 0.15s; position: relative;
   font-family: 'Georgia','Noto Serif SC',serif; background: transparent;
 }
 .tab.active { color: var(--gold-deep); font-weight: 700; }
@@ -392,6 +429,9 @@ body {
   font-size: 10.5px; color: var(--muted); text-align: center;
   margin-top: 8px; line-height: 1.7;
 }
+.detail-meta .sex-line {
+  color: var(--gold-dark); font-weight: 600; font-size: 11px;
+}
 .detail-right { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 .bar-row {
@@ -409,9 +449,37 @@ body {
 .fill-fav { background: linear-gradient(90deg, #e8b8c5, #b85d7d); }
 .fill-cor { background: linear-gradient(90deg, #c9b8c9, #7c5cc4); }
 .bar-num {
-  width: 32px; text-align: right; font-weight: 700; font-size: 11px;
+  width: 42px; text-align: right; font-weight: 700; font-size: 11px;
   color: var(--gold-deep); font-family: 'Georgia',monospace;
 }
+.bar-num.neg { color: var(--sex-other); }
+
+/* ===== 对称条（好感度 / 声望） ===== */
+.bar-track-sym {
+  flex: 1; height: 6px;
+  background: rgba(216,207,190,0.5);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.bar-track-sym::before {
+  content: ''; position: absolute;
+  left: 50%; top: -1px; bottom: -1px; width: 1px;
+  background: var(--line-2);
+  z-index: 2;
+  transform: translateX(-0.5px);
+}
+.bar-fill-neg,
+.bar-fill-pos {
+  position: absolute; top: 0; bottom: 0;
+  transition: width 0.4s ease;
+}
+.bar-fill-neg { right: 50%; }
+.bar-fill-pos { left: 50%; }
+.fav-neg { background: linear-gradient(90deg, #6b5058, #8a6da5); }
+.fav-pos { background: linear-gradient(90deg, #e8b8c5, #b85d7d); }
+.rep-neg { background: linear-gradient(90deg, #6b3030, #b85d5d); }
+.rep-pos { background: linear-gradient(90deg, #c9c18a, #b8935a); }
 
 .res-bar-row {
   display: flex; align-items: center; gap: 6px;
@@ -561,6 +629,13 @@ body {
   padding: 1px 6px; border: 1px solid var(--gold-light); border-radius: 2px;
   background: rgba(224,192,136,0.1);
   font-family: 'Georgia','Noto Serif SC',serif; text-transform: uppercase;
+}
+.item-type-tag {
+  font-size: 10px; color: var(--q-稀有);
+  padding: 1px 7px; border: 1px solid rgba(74,122,155,0.35);
+  border-radius: 2px; background: rgba(74,122,155,0.1);
+  letter-spacing: 1px;
+  font-family: 'Georgia','Noto Serif SC',serif;
 }
 .item-qty {
   font-size: 10.5px; color: var(--gold-deep);
@@ -1104,6 +1179,89 @@ body {
   font-size: 11px; letter-spacing: 1px;
 }
 .free-points .num { font-weight: 700; font-family: 'Georgia',monospace; font-size: 12px; }
+
+/* ===== 新闻 ===== */
+.news-card {
+  padding: 10px 14px; margin-bottom: 8px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.65);
+  border-left: 3px solid var(--q-稀有);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.news-title {
+  font-weight: 700; font-size: 12.5px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--ink); margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+.news-desc {
+  font-size: 11.5px; line-height: 1.65;
+  color: var(--ink-2);
+}
+.news-sl {
+  font-size: 10.5px; color: var(--gold-dark);
+  margin-top: 6px; padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 1px;
+}
+
+/* ===== 阵营 ===== */
+.faction-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+.faction-card {
+  padding: 10px 12px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+.faction-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-light);
+  box-shadow: 0 6px 16px rgba(184,147,90,0.2);
+  background: rgba(255,255,255,0.9);
+}
+.faction-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6px; margin-bottom: 8px;
+}
+.faction-name {
+  font-weight: 700; font-size: 13px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  color: var(--ink);
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.faction-tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 2px;
+  font-family: 'Georgia','Noto Serif SC',serif;
+  letter-spacing: 1px; font-weight: 700;
+  flex-shrink: 0;
+}
+.faction-tag.pos { background: rgba(107,155,92,0.18); color: #4a7a3e; border: 1px solid rgba(107,155,92,0.4); }
+.faction-tag.neg { background: rgba(184,93,93,0.18); color: #a04a4a; border: 1px solid rgba(184,93,93,0.4); }
+.faction-tag.neu { background: rgba(160,152,137,0.18); color: var(--muted); border: 1px solid rgba(160,152,137,0.4); }
+.faction-rep-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.faction-rep-row .bar-track-sym { height: 6px; }
+.faction-rep-num {
+  font-family: 'Georgia', monospace;
+  font-weight: 700; font-size: 12px;
+  min-width: 40px; text-align: right;
+}
+.faction-rep-num.pos { color: #6b9b5c; }
+.faction-rep-num.neg { color: var(--res-hp); }
+.faction-rep-num.neu { color: var(--muted); }
 </style>
 </head>
 <body>
@@ -1118,6 +1276,7 @@ body {
       <div class="entry-btn" id="entry-task"><span class="ico">✎</span>任务</div>
       <div class="entry-btn" id="entry-building"><span class="ico">⌂</span>高塔</div>
       <div class="entry-btn" id="entry-history"><span class="ico">⏳</span>历史</div>
+      <div class="entry-btn" id="entry-faction"><span class="ico">⚔</span>阵营</div>
     </div>
   </div>
 </div>
@@ -1156,6 +1315,18 @@ body {
   <div class="modal marble">
     <div class="modal-head">历史记录 <button class="close-btn" data-close="mask-history">✕</button></div>
     <div class="modal-body" id="history-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-news">
+  <div class="modal marble">
+    <div class="modal-head">新闻速报 <button class="close-btn" data-close="mask-news">✕</button></div>
+    <div class="modal-body" id="news-body"></div>
+  </div>
+</div>
+<div class="mask" id="mask-faction">
+  <div class="modal marble">
+    <div class="modal-head">阵营声望 <button class="close-btn" data-close="mask-faction">✕</button></div>
+    <div class="modal-body" id="faction-body"></div>
   </div>
 </div>
 
@@ -1370,6 +1541,29 @@ body {
     if (!max || max <= 0) return 0;
     return Math.max(0, Math.min(100, Math.round(cur / max * 100)));
   }
+  function sexSymbol(s) {
+    if (s === '男') return '♂';
+    if (s === '女') return '♀';
+    if (s === '其他') return '⚥';
+    return '';
+  }
+  function sexClass(s) {
+    if (s === '男') return 'male';
+    if (s === '女') return 'female';
+    if (s === '其他') return 'other';
+    return '';
+  }
+  function sexHtml(s, extraStyle) {
+    const sym = sexSymbol(s);
+    if (!sym) return '';
+    return `<span class="sex-sym ${sexClass(s)}"${extraStyle?` style="${extraStyle}"`:''}>${sym}</span>`;
+  }
+  function fmtShare(share) {
+    if (!share || typeof share !== 'object') return '';
+    const entries = Object.entries(share).filter(([, v]) => Number.isFinite(Number(v)));
+    if (!entries.length) return '';
+    return entries.map(([k, v]) => `${k} ${v}%`).join(' · ');
+  }
 
   // 头像
   const AVATAR_PREFIX = 'tower_avatar_';
@@ -1472,8 +1666,10 @@ body {
     const atk = item.攻击力;
     const dist = item.有效距离;
     const hold = item.持用;
-    const wear = item.穿着状态 || '';
-    const look = item.外观描述 || '';
+    const status = item.状态 || '';
+    const part = item.部位 || '';
+    const cover = item.覆盖部位 || '';
+    const dmgShare = fmtShare(item.伤害占比);
     const intro = item.介绍 || '';
     const effects = item.效果 || {};
 
@@ -1483,12 +1679,14 @@ body {
       ${type ? `<span class="info-popover-type">${esc(type)}</span>` : ''}
     </div>`;
     let body = '';
-    if (wear) body += `<div class="info-popover-row"><span class="k">穿着</span>${esc(wear)}</div>`;
-    if (look) body += `<div class="info-popover-row">${esc(look)}</div>`;
+    if (status) body += `<div class="info-popover-row"><span class="k">状态</span>${esc(status)}</div>`;
+    if (part) body += `<div class="info-popover-row"><span class="k">部位</span>${esc(part)}</div>`;
+    if (cover) body += `<div class="info-popover-row"><span class="k">覆盖</span>${esc(cover)}</div>`;
     if (atk != null) body += `<div class="info-popover-row"><span class="k">攻击</span>${esc(atk)}</div>`;
     if (armor != null) body += `<div class="info-popover-row"><span class="k">护甲</span>${esc(armor)}</div>`;
     if (dist) body += `<div class="info-popover-row"><span class="k">距离</span>${esc(dist)}</div>`;
     if (hold) body += `<div class="info-popover-row"><span class="k">持用</span>${esc(hold)}</div>`;
+    if (dmgShare) body += `<div class="info-popover-row"><span class="k">伤害占比</span>${esc(dmgShare)}</div>`;
     if (intro) body += `<div class="info-popover-row">${esc(intro)}</div>`;
     body += buildEffectsHtml(effects);
     return head + body;
@@ -1502,6 +1700,7 @@ body {
     const dist = s.有效距离 || '无';
     const target = s.作用目标 ?? 0;
     const power = s.技能威力 ?? 0;
+    const dmgShare = fmtShare(s.伤害占比);
     const intro = s.介绍 || '';
     const effects = s.效果 || {};
 
@@ -1516,6 +1715,7 @@ body {
     if (type === '主动') {
       body += `<div class="info-popover-row"><span class="k">距离</span>${esc(dist)} · <span class="k">目标</span>${esc(target)} · <span class="k">威力</span>${esc(power)}</div>`;
     }
+    if (dmgShare) body += `<div class="info-popover-row"><span class="k">伤害占比</span>${esc(dmgShare)}</div>`;
     if (intro) body += `<div class="info-popover-row">${esc(intro)}</div>`;
     body += buildEffectsHtml(effects);
     return head + body;
@@ -1555,6 +1755,7 @@ body {
     } else {
       html += `<span class="world-item">${fmtTime(time)}</span>`;
     }
+    html += `<button class="news-entry-btn" id="news-entry-btn" title="新闻速报">📰</button>`;
     document.getElementById('worldbar').innerHTML = html;
   }
 
@@ -1564,6 +1765,24 @@ body {
       <span class="lbl">${esc(label)}</span>
       <div class="res-bar-track"><div class="res-bar-fill ${cls}" style="width:${pct}%"></div></div>
       <span class="res-bar-num">${toNum(cur,0)}/${toNum(max,0)}</span>
+    </div>`;
+  }
+
+  function renderSymBar(label, cur, negCls, posCls, numCls) {
+    const val = Number(cur) || 0;
+    const abs = Math.abs(val);
+    const halfPct = Math.min(50, abs / 2);
+    const negW = val < 0 ? halfPct : 0;
+    const posW = val > 0 ? halfPct : 0;
+    const numClass = val < 0 ? (numCls || 'neg') : (val > 0 ? '' : '');
+    const sign = val > 0 ? '+' : '';
+    return `<div class="bar-row">
+      <span class="label">${esc(label)}</span>
+      <div class="bar-track-sym">
+        <div class="bar-fill-neg ${negCls}" style="width:${negW}%"></div>
+        <div class="bar-fill-pos ${posCls}" style="width:${posW}%"></div>
+      </div>
+      <span class="bar-num ${numClass}">${sign}${val}</span>
     </div>`;
   }
 
@@ -1636,6 +1855,7 @@ body {
     const info = getVar('轮回者', {});
     const derived = info._派生 || {};
     const name = info.姓名 || '轮回者';
+    const sex = info.性别 || '';
     const rank = derived.位阶 || '凡人';
     const lv = toNum(derived.lv, 5);
     const armor = toNum(derived.护甲总值, 0);
@@ -1670,7 +1890,7 @@ body {
           <span class="value">${points.toLocaleString()}</span>
         </div>
       </div>
-      <div class="reincarnator-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
+      <div class="reincarnator-row"><span class="label">姓名</span><span class="value">${esc(name)}${sexHtml(sex)}</span></div>
       ${!inTower && planeId ? `<div class="reincarnator-row"><span class="label">身份</span><span class="value">${esc(planeId)}</span></div>` : ''}
       <div class="reincarnator-row"><span class="label">场景</span><span class="value">${esc(scene)}</span></div>
       <div style="padding-top: 10px; border-top: 1px solid var(--line); margin-top: 6px;">
@@ -1684,7 +1904,7 @@ body {
   }
 
   function openReincarnatorDetail() {
-    window.__tower_attrPreview = null;   // 打开时清空预览
+    window.__tower_attrPreview = null;
     renderReincarnatorTab('level');
     document.getElementById('mask-reincarnator').classList.add('show');
   }
@@ -1697,13 +1917,14 @@ body {
         <div class="tab ${tab==='equip'?'active':''}" data-reincarnator-tab="equip">装备</div>
         <div class="tab ${tab==='skill'?'active':''}" data-reincarnator-tab="skill">技能</div>
         <div class="tab ${tab==='item'?'active':''}" data-reincarnator-tab="item">物品</div>
+        <div class="tab ${tab==='state'?'active':''}" data-reincarnator-tab="state">状态</div>
       </div>
       <div id="reincarnator-tab-content"></div>
     `;
     body.querySelectorAll('[data-reincarnator-tab]').forEach(el => {
       el.addEventListener('click', () => {
         if (el.dataset.reincarnatorTab !== 'level') {
-          window.__tower_attrPreview = null;   // 切走别的 tab 时清空预览
+          window.__tower_attrPreview = null;
         }
         renderReincarnatorTab(el.dataset.reincarnatorTab);
       });
@@ -1721,6 +1942,7 @@ body {
       const expPct = Math.min(100, Math.round(expCur / threshold * 100));
       const fp = toNum(info.自由点, 0);
       const maxAttr = RANK_MAX[rank] || 8;
+      const sex = info.性别 || '';
 
       const keys = ['力量','敏捷','体质','智力','精神'];
       const baseAttrs = {};
@@ -1775,6 +1997,7 @@ body {
         <div class="lv-display">
           <span class="lv-big">${lv}</span>
           <span class="lv-suffix">LEVEL</span>
+          ${sexHtml(sex, 'font-size:18px;margin-left:4px;')}
           <span class="rank-chip rank-${esc(rank)}">${esc(rank)}</span>
         </div>
         <div class="exp-block">
@@ -1796,7 +2019,6 @@ body {
       `;
       content.innerHTML = html;
 
-      // + 按钮
       content.querySelectorAll('[data-attr-plus]').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
@@ -1813,7 +2035,6 @@ body {
         });
       });
 
-      // − 按钮（撤回本次加点）
       content.querySelectorAll('[data-attr-minus]').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
@@ -1828,7 +2049,6 @@ body {
         });
       });
 
-      // 重置
       content.querySelectorAll('[data-attr-reset]').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
@@ -1837,7 +2057,6 @@ body {
         });
       });
 
-      // 确认
       content.querySelectorAll('[data-attr-confirm]').forEach(el => {
         el.addEventListener('click', async e => {
           e.stopPropagation();
@@ -1853,7 +2072,6 @@ body {
             const stat = await window.__tower_read();
             if (!stat) throw new Error('读取变量失败');
 
-            // 一致性校验（防止玩家预览时外部也改了）
             const latestFp = toNum(stat.轮回者?.自由点, 0);
             const latestAttr = stat.轮回者?.五维 || {};
             for (const k of keys) {
@@ -1916,13 +2134,13 @@ body {
       entries.forEach(([slot, item]) => {
         const name = (item && item.名称) || '—';
         const quality = (item && item.品质) || '普通';
-        const wear = (item && item.穿着状态) || '完好';
+        const status = (item && item.状态) || '正常';
         html += `<div class="item-card q-${esc(quality)}" data-equip-slot="${esc(slot)}">
           <div class="item-name">
             <span class="item-slot-tag">${esc(slot)}</span>
             ${esc(name)}
             <span class="item-qty" style="background:var(--q-${esc(quality)});color:#fff;">${esc(quality)}</span>
-            <span class="item-qty">${esc(wear)}</span>
+            <span class="item-qty">${esc(status)}</span>
           </div>
         </div>`;
       });
@@ -1979,24 +2197,64 @@ body {
       return;
     }
 
+    if (tab === 'state') {
+      const states = info.状态 || {};
+      const entries = sortedEntries(states);
+      if (!entries.length) {
+        content.innerHTML = '<div class="empty-tip">无状态效果</div>';
+        return;
+      }
+      content.innerHTML = `<div class="block">
+        <div class="block-title">状态效果</div>
+        ${entries.map(([name, s]) => `
+          <div class="kv-row">
+            <span class="k" style="color:var(--gold-dark);font-weight:600;">${esc(name)}</span>
+            <span class="v">${esc(s.效果||'')}${s.剩余?` <span style="color:var(--muted);font-size:10px;">(${esc(s.剩余)})</span>`:''}</span>
+          </div>
+        `).join('')}
+      </div>`;
+      return;
+    }
+
     // item
-    const items = info.持有物品 || {};
-    const entries = sortedEntries(items);
-    if (!entries.length) {
+    const held = info.持有物品 || {};
+    const items = held.物品 || {};
+    const bagEquip = held.装备 || {};
+    const itemEntries = sortedEntries(items);
+    const bagEquipEntries = sortedEntries(bagEquip);
+    if (!itemEntries.length && !bagEquipEntries.length) {
       content.innerHTML = '<div class="empty-tip">囊中空空</div>';
       return;
     }
     const qOrder = { '普通':0,'精良':1,'稀有':2,'史诗':3,'传说':4,'神话':5 };
     let html = '';
-    entries.slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0)).forEach(([name, item]) => {
-      html += `<div class="item-card q-${esc(item.品质||'普通')}" data-item-name="${esc(name)}">
-        <div class="item-name">
-          ${esc(item.名称||name)}
-          ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
-        </div>
-        ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
-      </div>`;
-    });
+    if (itemEntries.length) {
+      html += `<div class="section-title">物品</div>`;
+      itemEntries.slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0)).forEach(([name, item]) => {
+        html += `<div class="item-card q-${esc(item.品质||'普通')}" data-item-name="${esc(name)}">
+          <div class="item-name">
+            ${esc(item.名称||name)}
+            ${item.类型 ? `<span class="item-type-tag">${esc(item.类型)}</span>` : ''}
+            ${item.数量 > 1 ? `<span class="item-qty">×${esc(item.数量)}</span>` : ''}
+          </div>
+          ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
+        </div>`;
+      });
+    }
+    if (bagEquipEntries.length) {
+      html += `<div class="section-title" style="margin-top:16px;">背包中的装备</div>`;
+      bagEquipEntries.slice().sort((a,b)=>(qOrder[b[1].品质]||0)-(qOrder[a[1].品质]||0)).forEach(([name, item]) => {
+        const quality = item.品质 || '普通';
+        html += `<div class="item-card q-${esc(quality)}" data-bag-equip-name="${esc(name)}">
+          <div class="item-name">
+            ${esc(item.名称||name)}
+            <span class="item-qty" style="background:var(--q-${esc(quality)});color:#fff;">${esc(quality)}</span>
+            ${item.类型 ? `<span class="item-slot-tag">${esc(item.类型)}</span>` : ''}
+          </div>
+          ${item.介绍 ? `<div class="item-desc">${esc(item.介绍)}</div>` : ''}
+        </div>`;
+      });
+    }
     content.innerHTML = html;
     content.querySelectorAll('[data-item-name]').forEach(el => {
       const name = el.dataset.itemName;
@@ -2006,6 +2264,14 @@ body {
         toggleInfoPopover(el, buildEquipPopoverHtml({
           名称: item.名称 || name, 品质: item.品质, 类型: item.类型, 介绍: item.介绍, 效果: item.效果
         }));
+      });
+    });
+    content.querySelectorAll('[data-bag-equip-name]').forEach(el => {
+      const name = el.dataset.bagEquipName;
+      const item = bagEquip[name] || {};
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleInfoPopover(el, buildEquipPopoverHtml(item));
       });
     });
   }
@@ -2031,7 +2297,7 @@ body {
             <div class="char-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
             <div style="flex:1;min-width:0;">
               <div class="char-name">
-                ${esc(name)}
+                ${esc(name)}${sexHtml(n.性别)}
                 <span class="rank-mini rank-${esc(rank)}">${esc(rank)}</span>
                 <span class="rank-mini" style="background:var(--gold-deep);">LV${lv}</span>
               </div>
@@ -2064,6 +2330,7 @@ body {
     const n = c.普通 || {};
     const d = c._派生 || {};
     const name = n.姓名 || key;
+    const sex = n.性别 || '';
     const rank = d.位阶 || '凡人';
     const lv = toNum(d.lv, 5);
     const fav = toNum(n.好感度, 0);
@@ -2076,12 +2343,13 @@ body {
       <div class="char-detail">
         <div class="detail-left">
           <div class="detail-avatar b-${esc(rank)}" data-avatar-name="${esc(name)}">${avatarInner}</div>
-          <div class="detail-name">${esc(name)}</div>
+          <div class="detail-name">${esc(name)}${sexHtml(sex, 'font-size:15px;')}</div>
           <div class="detail-rank rank-${esc(rank)}">${esc(rank)}</div>
           <div style="margin-top:6px;">
             <span class="lv-artistic" style="font-size:20px;"><span class="prefix">LV</span>${lv}</span>
           </div>
           <div class="detail-meta">
+            <div class="sex-line">${sexSymbol(sex)} ${esc(sex)}</div>
             ${n.年龄 ? esc(n.年龄)+' 岁' : ''}<br>
             ${esc(n.身份||'')}<br>
             <span style="color:var(--gold-dark);">来源 · ${esc(n.来源位面||'未知')}</span><br>
@@ -2089,11 +2357,7 @@ body {
           </div>
         </div>
         <div class="detail-right">
-          <div class="bar-row">
-            <span class="label">好感</span>
-            <div class="bar-track"><div class="bar-fill fill-fav" style="width:${Math.max(0,Math.min(100,fav))}%"></div></div>
-            <span class="bar-num">${fav}</span>
-          </div>
+          ${renderSymBar('好感', fav, 'fav-neg', 'fav-pos', 'neg')}
           <div class="bar-row">
             <span class="label">堕落</span>
             <div class="bar-track"><div class="bar-fill fill-cor" style="width:${Math.max(0,Math.min(100,cor))}%"></div></div>
@@ -2250,13 +2514,13 @@ body {
       entries.forEach(([slot, item]) => {
         const name = (item && item.名称) || '—';
         const quality = (item && item.品质) || '普通';
-        const wear = (item && item.穿着状态) || '';
+        const status = (item && item.状态) || '';
         html += `<div class="item-card q-${esc(quality)}" data-char-equip-slot="${esc(slot)}">
           <div class="item-name">
             <span class="item-slot-tag">${esc(slot)}</span>
             ${esc(name)}
             <span class="item-qty" style="background:var(--q-${esc(quality)});color:#fff;">${esc(quality)}</span>
-            ${wear ? `<span class="item-qty">${esc(wear)}</span>` : ''}
+            ${status ? `<span class="item-qty">${esc(status)}</span>` : ''}
           </div>
         </div>`;
       });
@@ -2485,12 +2749,109 @@ body {
     document.getElementById('mask-history').classList.add('show');
   }
 
+  const NEWS_CATS = [
+    { key: '今日要闻', label: '今日要闻' },
+    { key: '现场直击', label: '现场直击' },
+    { key: '深度聚焦', label: '深度聚焦' },
+    { key: '后续追踪', label: '后续追踪' },
+  ];
+
+  function openNewsModal() {
+    const body = document.getElementById('news-body');
+    let tabsHtml = '<div class="tabs">';
+    NEWS_CATS.forEach((c, i) => {
+      tabsHtml += `<div class="tab ${i===0?'active':''}" data-news-tab="${esc(c.key)}">${esc(c.label)}</div>`;
+    });
+    tabsHtml += '</div><div id="news-tab-content"></div>';
+    body.innerHTML = tabsHtml;
+    body.querySelectorAll('[data-news-tab]').forEach(el => {
+      el.addEventListener('click', () => {
+        body.querySelectorAll('[data-news-tab]').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderNewsTab(el.dataset.newsTab);
+      });
+    });
+    renderNewsTab('今日要闻');
+    document.getElementById('mask-news').classList.add('show');
+  }
+
+  function renderNewsTab(catKey) {
+    const content = document.getElementById('news-tab-content');
+    if (!content) return;
+    const all = getVar('新闻', {});
+    const entries = sortedEntries(all[catKey] || {});
+    if (!entries.length) {
+      content.innerHTML = '<div class="empty-tip">暂无新闻</div>';
+      return;
+    }
+    content.innerHTML = entries.map(([title, n]) => `
+      <div class="news-card">
+        <div class="news-title">${esc(title)}</div>
+        ${n.描述 ? `<div class="news-desc">${esc(n.描述)}</div>` : ''}
+        ${n.对应故事线 ? `<div class="news-sl">▸ ${esc(n.对应故事线)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function repTag(v) {
+    if (v >= 75) return { tag: '崇拜', cls: 'pos' };
+    if (v >= 40) return { tag: '友好', cls: 'pos' };
+    if (v >= 10) return { tag: '友善', cls: 'pos' };
+    if (v > -10) return { tag: '中立', cls: 'neu' };
+    if (v > -40) return { tag: '冷淡', cls: 'neg' };
+    if (v > -75) return { tag: '敌对', cls: 'neg' };
+    return { tag: '仇恨', cls: 'neg' };
+  }
+
+  function openFactionModal() {
+    const body = document.getElementById('faction-body');
+    const entries = sortedEntries(getVar('阵营', {}));
+    if (!entries.length) {
+      body.innerHTML = '<div class="empty-tip">暂无阵营记录</div>';
+      document.getElementById('mask-faction').classList.add('show');
+      return;
+    }
+    body.innerHTML = `<div class="faction-grid">${
+      entries.map(([name, f]) => {
+        const rep = toNum(f.声望, 0);
+        const abs = Math.abs(rep);
+        const half = Math.min(50, abs / 2);
+        const negW = rep < 0 ? half : 0;
+        const posW = rep > 0 ? half : 0;
+        const { tag, cls } = repTag(rep);
+        const numCls = rep > 0 ? 'pos' : (rep < 0 ? 'neg' : 'neu');
+        const sign = rep > 0 ? '+' : '';
+        return `<div class="faction-card">
+          <div class="faction-head">
+            <div class="faction-name" title="${esc(name)}">${esc(name)}</div>
+            <span class="faction-tag ${cls}">${tag}</span>
+          </div>
+          <div class="faction-rep-row">
+            <div class="bar-track-sym">
+              <div class="bar-fill-neg rep-neg" style="width:${negW}%"></div>
+              <div class="bar-fill-pos rep-pos" style="width:${posW}%"></div>
+            </div>
+            <span class="faction-rep-num ${numCls}">${sign}${rep}</span>
+          </div>
+        </div>`;
+      }).join('')
+    }</div>`;
+    document.getElementById('mask-faction').classList.add('show');
+  }
+
   function bindEvents() {
     document.getElementById('entry-reincarnator').addEventListener('click', openReincarnatorDetail);
     document.getElementById('entry-char').addEventListener('click', openCharList);
     document.getElementById('entry-task').addEventListener('click', openTaskModal);
     document.getElementById('entry-building').addEventListener('click', openBuildingModal);
     document.getElementById('entry-history').addEventListener('click', openHistoryModal);
+    document.getElementById('entry-faction').addEventListener('click', openFactionModal);
+
+    // 新闻按钮：事件委托到 worldbar（innerHTML 重渲染也能触发）
+    document.getElementById('worldbar').addEventListener('click', e => {
+      if (e.target.closest('#news-entry-btn')) openNewsModal();
+    });
+
     document.querySelectorAll('[data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.getElementById(btn.dataset.close).classList.remove('show');
@@ -2528,7 +2889,6 @@ body {
       }
     } catch(e) { console.warn('[tower] initial recalc failed', e); }
 
-    // 事件订阅（如可用）
     try {
       const evt = window.Mvu?.events?.VARIABLE_UPDATE_ENDED;
       if (typeof eventOn === 'function' && evt !== undefined) {
@@ -2539,7 +2899,6 @@ body {
       }
     } catch(e) { /* 忽略 */ }
 
-    // 轮询兜底
     setInterval(async () => {
       try {
         if (window.__towerRecalc) await window.__towerRecalc();
