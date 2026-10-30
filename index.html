@@ -1201,13 +1201,7 @@ body {
   font-size: 11.5px; line-height: 1.65;
   color: var(--ink-2);
 }
-.news-sl {
-  font-size: 10.5px; color: var(--gold-dark);
-  margin-top: 6px; padding-top: 6px;
-  border-top: 1px dashed var(--line);
-  font-family: 'Georgia','Noto Serif SC',serif;
-  letter-spacing: 1px;
-}
+
 
 /* ===== 阵营 ===== */
 .faction-grid {
@@ -2784,13 +2778,12 @@ body {
       content.innerHTML = '<div class="empty-tip">暂无新闻</div>';
       return;
     }
-    content.innerHTML = entries.map(([title, n]) => `
-      <div class="news-card">
-        <div class="news-title">${esc(title)}</div>
-        ${n.描述 ? `<div class="news-desc">${esc(n.描述)}</div>` : ''}
-        ${n.对应故事线 ? `<div class="news-sl">▸ ${esc(n.对应故事线)}</div>` : ''}
-      </div>
-    `).join('');
+ content.innerHTML = entries.map(([title, n]) => `
+  <div class="news-card">
+    <div class="news-title">${esc(title)}</div>
+    ${n.描述 ? `<div class="news-desc">${esc(n.描述)}</div>` : ''}
+  </div>
+`).join('');
   }
 
   function repTag(v) {
